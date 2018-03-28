@@ -1,0 +1,13 @@
+washer-start/functions/node_modules
+washer-start/functions/package-lock.json
+washer-start/.firebaserc
+
+washer-done/functions/node_modules
+washer-done/functions/package-lock.json
+washer-done/.firebaserc
+
+
+washer-start/functions/key.json
+washer-done/functions/key.json
+
+washer-iot/.idea/

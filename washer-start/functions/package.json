@@ -1,0 +1,17 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "engines": {
+    "node": ">=6.11.1"
+  },
+  "dependencies": {
+    "actions-on-google": "file:actions-on-google-2.0.0-alpha.2.tgz",
+    "cors": "^2.8.4",
+    "firebase": "^4.0.0",
+    "firebase-admin": "^5.8.1",
+    "firebase-functions": "^0.8.1",
+    "google-auth-library": "^0.10.0",
+    "googleapis": "^27.0.0"
+  },
+  "private": true
+}
