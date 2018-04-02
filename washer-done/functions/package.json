@@ -13,5 +13,9 @@
     "google-auth-library": "^0.10.0",
     "googleapis": "^27.0.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-google": "^0.9.1"
+  }
 }
