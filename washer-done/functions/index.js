@@ -6,14 +6,7 @@ const cors = require('cors')({ origin: true });
 const util = require('util');
 const firebase = require('firebase');
 // Initialize Firebase
-const config = {
-  apiKey: "XXX",
-  authDomain: "<project-id>.firebaseapp.com",
-  databaseURL: "https://<project-id>.firebaseio.com",
-  projectId: "<project-id>",
-  storageBucket: "<project-id>.appspot.com",
-  messagingSenderId: "YYY"
-};
+const config = functions.config().firebase;
 firebase.initializeApp(config);
 
 const CLIENT_ID = 'ABC123';
@@ -32,19 +25,19 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     request.query.grant_type : request.body.grant_type;
   console.log("Grant type", grant_type);
   let obj;
-  if (grant_type == 'authorization_code') {
+  if (grant_type === 'authorization_code') {
     obj = {
       token_type: "bearer",
       access_token: '123access',
       refresh_token: '123refresh',
       expires_in: 60 * 60 * 24 // 1 day
     };
-  } else if (grant_type == 'refresh_token') {
+  } else if (grant_type === 'refresh_token') {
     obj = {
       token_type: "bearer",
       access_token: '123access',
       expires_in: 60 * 60 * 24 // 1 day
-    }
+    };
   }
   response.status(200)
     .json(obj);
@@ -53,9 +46,9 @@ exports.faketoken = functions.https.onRequest((request, response) => {
 const app = smarthome({
   debug: true,
   API_KEY: '<api-key>'
-})
+});
 
-app.onSync(body => {
+app.onSync(() => {
   return {
     requestId: "ff36a3cc-ec34-11e6-b1a0-64510650abcf",
     payload: {
@@ -124,6 +117,7 @@ app.onSync(body => {
 });
 
 function queryFirebase(deviceId) {
+  const firebaseRef = firebase.database().ref('/');
   return new Promise((resolve, reject) => {
     firebaseRef.child(deviceId).once('value').then(snapshot => {
       const snapshotVal = snapshot.val();
@@ -134,8 +128,9 @@ function queryFirebase(deviceId) {
         load: snapshotVal.Modes.load,
         turbo: snapshotVal.Toggles.Turbo
       });
-    });
-  })
+    })
+    .catch((e) => reject(e));
+  });
 }
 
 app.onQuery(body => {
@@ -172,7 +167,8 @@ app.onQuery(body => {
               requestId: requestId,
               payload: payload
             });
-          });
+          })
+        .catch((e) => reject(e));
       }
     }
   });
