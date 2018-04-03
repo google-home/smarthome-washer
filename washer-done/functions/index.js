@@ -10,11 +10,8 @@ const config = functions.config().firebase;
 firebase.initializeApp(config);
 const firebaseRef = firebase.database().ref('/');
 
-const CLIENT_ID = 'ABC123';
-const CLIENT_SECRET = 'DEF456';
-
 exports.fakeauth = functions.https.onRequest((request, response) => {
-  let responseurl = util.format('%s?code=%s&state=%s',
+  const responseurl = util.format('%s?code=%s&state=%s',
     decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
     request.query.state);
   console.log(responseurl);
@@ -22,25 +19,28 @@ exports.fakeauth = functions.https.onRequest((request, response) => {
 });
 
 exports.faketoken = functions.https.onRequest((request, response) => {
-  let grant_type = request.query.grant_type ?
-    request.query.grant_type : request.body.grant_type;
-  console.log('Grant type', grant_type);
+  const grantType = request.query.grant_type
+    ? request.query.grant_type : request.body.grant_type;
+  const secondsInDay = 86400; // 60 * 60 * 24
+  const HTTP_STATUS_OK = 200;
+  console.log(`Grant type ${grantType}`);
+
   let obj;
-  if (grant_type === 'authorization_code') {
+  if (grantType === 'authorization_code') {
     obj = {
       token_type: 'bearer',
       access_token: '123access',
       refresh_token: '123refresh',
-      expires_in: 60 * 60 * 24, // 1 day
+      expires_in: secondsInDay,
     };
-  } else if (grant_type === 'refresh_token') {
+  } else if (grantType === 'refresh_token') {
     obj = {
       token_type: 'bearer',
       access_token: '123access',
-      expires_in: 60 * 60 * 24, // 1 day
+      expires_in: secondsInDay,
     };
   }
-  response.status(200)
+  response.status(HTTP_STATUS_OK)
     .json(obj);
 });
 
@@ -78,9 +78,10 @@ app.onSync(() => {
         attributes: {
           dataTypesSupported: [{
             name: 'temperature',
-            data_type: [
-              {type_synonym: ['temperature'], lang: 'en'},
-            ],
+            data_type: [{
+              type_synonym: ['temperature'],
+              lang: 'en',
+            }],
             default_device_unit: 'F',
           }],
           availableModes: [{
@@ -124,7 +125,6 @@ const queryFirebase = (deviceId) => firebaseRef.child(deviceId).once('value')
       on: snapshotVal.OnOff.on,
       isPaused: snapshotVal.StartStop.isPaused,
       isRunning: snapshotVal.StartStop.isRunning,
-      sensorData: snapshotVal.data_value,
       load: snapshotVal.Modes.load,
       turbo: snapshotVal.Toggles.Turbo,
     };
@@ -141,12 +141,6 @@ const queryDevice = (deviceId) => queryFirebase(deviceId).then((data) => ({
   }],
   currentTotalRemainingTime: 1212,
   currentCycleRemainingTime: 301,
-  currentSensorData: [{
-    name: 'temperature',
-    data_type_key: 'temperature',
-    default_device_unit: 'F',
-    data_value: data.sensorData,
-  }],
   currentModeSettings: {
     load: data.load,
   },
@@ -156,7 +150,7 @@ const queryDevice = (deviceId) => queryFirebase(deviceId).then((data) => ({
 }));
 
 app.onQuery((body) => {
-  const requestId = body.requestId;
+  const {requestId} = body;
   const payload = {
     devices: {},
   };
@@ -181,7 +175,7 @@ app.onQuery((body) => {
 });
 
 app.onExecute((body) => {
-  const requestId = body.requestId;
+  const {requestId} = body;
   const payload = {
     commands: [{
       ids: [],
@@ -192,13 +186,14 @@ app.onExecute((body) => {
     }],
   };
   for (const input of body.inputs) {
-    for (const command of input.payload.commands) {
+    for (let k = 0; k < input.payload.commands.length; k++) {
+      const command = input.payload.commands[k];
       for (const device of command.devices) {
         const deviceId = device.id;
         payload.commands[k].ids.push(deviceId);
         for (const execution of command.execution) {
           const execCommand = execution.command;
-          const params = execution.params;
+          const {params} = execution;
           switch (execCommand) {
             case 'action.devices.commands.OnOff':
               firebaseRef.child(deviceId).child('OnOff').update({
@@ -254,17 +249,17 @@ exports.requestsync = functions.https.onRequest((request, response) => {
       path: `/v1/devices:requestSync?key=${app.API_KEY}`,
       method: 'POST',
     };
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       let responseData = '';
-      let req = https.request(options, function(res) {
-        res.on('data', function(d) {
+      const req = https.request(options, (res) => {
+        res.on('data', (d) => {
           responseData += d.toString();
         });
-        res.on('end', function() {
+        res.on('end', () => {
           resolve(responseData);
         });
       });
-      req.on('error', function(e) {
+      req.on('error', (e) => {
         reject(e);
       });
       // Write data to request body
@@ -342,17 +337,17 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
         Authorization: ` Bearer ${tokens.access_token}`,
       },
     };
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       let responseData = '';
-      let req = https.request(options, function(res) {
-        res.on('data', function(d) {
+      const req = https.request(options, (res) => {
+        res.on('data', (d) => {
           responseData += d.toString();
         });
-        res.on('end', function() {
+        res.on('end', () => {
           resolve(responseData);
         });
       });
-      req.on('error', function(e) {
+      req.on('error', (e) => {
         reject(e);
       });
       // Write data to request body
