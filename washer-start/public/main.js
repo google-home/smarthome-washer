@@ -118,7 +118,6 @@ SmartHome.prototype.updateState = () => {
   let elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
   let elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
   let elToggles = document.getElementById('demo-washer-toggles');
-  let elSensor = document.getElementById('demo-washer-sensor');
 
   let pkg = {
     OnOff: { on: elOnOff.classList.contains('is-checked') },

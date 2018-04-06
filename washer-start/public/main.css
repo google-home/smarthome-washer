@@ -46,9 +46,6 @@ html, body {
   width: 320px;
   height: 480px;
 }
-.demo-card-square > .mdl-card__title {
-  color: #fff;
-}
 
 h3 {
   font-size: 25pt;
