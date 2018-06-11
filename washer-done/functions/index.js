@@ -62,7 +62,8 @@ exports.faketoken = functions.https.onRequest((request, response) => {
 
 const app = smarthome({
   debug: true,
-  API_KEY: '<api-key>',
+  key: '<api-key>',
+  jwt: require('./key.json'),
 });
 
 app.onSync(() => {
@@ -93,14 +94,6 @@ app.onSync(() => {
         },
         attributes: {
           pausable: true,
-          dataTypesSupported: [{
-            name: 'temperature',
-            data_type: [{
-              type_synonym: ['temperature'],
-              lang: 'en',
-            }],
-            default_device_unit: 'F',
-          }],
           availableModes: [{
             name: 'load',
             name_values: [{
@@ -262,7 +255,7 @@ exports.requestsync = functions.https.onRequest((request, response) => {
     const options = {
       hostname: 'homegraph.googleapis.com',
       port: 443,
-      path: `/v1/devices:requestSync?key=${app.API_KEY}`,
+      path: `/v1/devices:requestSync?key=${app.key}`,
       method: 'POST',
     };
     return new Promise((resolve, reject) => {
@@ -296,17 +289,6 @@ exports.requestsync = functions.https.onRequest((request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
   console.info('Firebase write event triggered this cloud function');
-  const https = require('https');
-  const {google} = require('googleapis');
-  const key = require('./key.json');
-  const jwtClient = new google.auth.JWT(
-    key.client_email,
-    null,
-    key.private_key,
-    ['https://www.googleapis.com/auth/homegraph'],
-    null
-  );
-
   const snapshotVal = event.data.val();
 
   const postData = {
@@ -326,38 +308,73 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
     },
   };
 
-  jwtClient.authorize((err, tokens) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    const options = {
-      hostname: 'homegraph.googleapis.com',
-      port: 443,
-      path: '/v1/devices:reportStateAndNotification',
-      method: 'POST',
-      headers: {
-        Authorization: ` Bearer ${tokens.access_token}`,
-      },
-    };
+  return reportState(postData, app.jwt)
+    .then((data) => {
+      console.log('Report state came back');
+      console.info(data);
+    });
+});
+
+const reportState = (url, data, jwt) => {
+  console.log(JSON.stringify(data));
+  const {google} = require('googleapis');
+  const https = require('https');
+  const encoding = 'utf8';
+  const options = {
+    hostname: 'homegraph.googleapis.com',
+    port: 443,
+    path: '/v1/devices:reportStateAndNotification',
+    method: 'POST',
+    headers: {},
+  };
+
+  const apiCall = (options) => {
     return new Promise((resolve, reject) => {
-      let responseData = '';
+      const buffers = [];
       const req = https.request(options, (res) => {
         res.on('data', (d) => {
-          responseData += d.toString();
+          buffers.push(typeof d === 'string' ? Buffer.from(d, encoding) : d);
         });
+
         res.on('end', () => {
-          resolve(responseData);
+          resolve(Buffer.concat(buffers).toString(encoding));
         });
       });
+
       req.on('error', (e) => {
         reject(e);
       });
       // Write data to request body
-      req.write(JSON.stringify(postData));
+      req.write(JSON.stringify(data));
       req.end();
-    }).then((data) => {
-      console.info(data);
     });
-  });
-});
+  };
+
+  if (jwt) {
+    console.info('JWT');
+    const jwtClient = new google.auth.JWT(
+      jwt.client_email,
+      undefined,
+      jwt.private_key,
+      ['https://www.googleapis.com/auth/homegraph'],
+      undefined
+    );
+
+    return new Promise((resolve, reject) => {
+      jwtClient.authorize((err, tokens) => {
+        console.log(err, tokens);
+        if (err) {
+          reject(err);
+        }
+        options.headers = {
+          Authorization: ` Bearer ${tokens.access_token}`,
+        };
+        resolve(options);
+      });
+    }).then((options) => {
+      return apiCall(options);
+    });
+  } else {
+    return apiCall(options);
+  }
+};
