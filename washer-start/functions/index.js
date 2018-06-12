@@ -69,10 +69,10 @@ const app = smarthome({
 app.onSync((body) => {
   // TODO: Implement SYNC response
   return {
-    'requestId': 'ff36a3cc-ec34-11e6-b1a0-64510650abcf',
-    'payload': {
-      'agentUserId': '123',
-      'devices': [],
+    requestId: 'ff36a3cc-ec34-11e6-b1a0-64510650abcf',
+    payload: {
+      agentUserId: '123',
+      devices: [],
     },
 
   };
