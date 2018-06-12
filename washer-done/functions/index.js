@@ -203,11 +203,10 @@ app.onExecute((body) => {
     }],
   };
   for (const input of body.inputs) {
-    for (let k = 0; k < input.payload.commands.length; k++) {
-      const command = input.payload.commands[k];
+    for (const command of input.payload.commands) {
       for (const device of command.devices) {
         const deviceId = device.id;
-        payload.commands[k].ids.push(deviceId);
+        payload.commands[0].ids.push(deviceId);
         for (const execution of command.execution) {
           const execCommand = execution.command;
           const {params} = execution;
