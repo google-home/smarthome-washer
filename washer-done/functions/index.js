@@ -320,19 +320,6 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
             on: snapshotVal.OnOff.on,
             isPaused: snapshotVal.StartStop.isPaused,
             isRunning: snapshotVal.StartStop.isRunning,
-            currentRunCycle: [{
-              currentCycle: 'rinse',
-              nextCycle: 'spin',
-              lang: 'en',
-            }],
-            currentTotalRemainingTime: 1212,
-            currentCycleRemainingTime: 301,
-            currentModeSettings: {
-              load: snapshotVal.Modes.load,
-            },
-            currentToggleSettings: {
-              Turbo: snapshotVal.Toggles.Turbo,
-            },
           },
         },
       },
