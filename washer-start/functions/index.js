@@ -79,6 +79,22 @@ app.onSync((body) => {
 //  return {};
 });
 
+const queryFirebase = (deviceId) => firebaseRef.child(deviceId).once('value')
+  .then((snapshot) => {
+    const snapshotVal = snapshot.val();
+    return {
+      on: snapshotVal.OnOff.on,
+      isPaused: snapshotVal.StartStop.isPaused,
+      isRunning: snapshotVal.StartStop.isRunning,
+    };
+  });
+
+const queryDevice = (deviceId) => queryFirebase(deviceId).then((data) => ({
+  on: data.on,
+  isPaused: data.isPaused,
+  isRunning: data.isRunning,
+}));
+
 app.onQuery((body) => {
   // TODO: Implement QUERY response
   return {};
