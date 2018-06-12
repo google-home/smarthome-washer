@@ -92,6 +92,7 @@ app.onSync(() => {
           swVersion: '1.0.1',
         },
         attributes: {
+          pausable: true,
           dataTypesSupported: [{
             name: 'temperature',
             data_type: [{
