@@ -20,7 +20,6 @@ function SmartHome() {
   document.addEventListener('DOMContentLoaded', function () {
     // Shortcuts to DOM Elements.
     this.denyButton = document.getElementById('demo-deny-button');
-    this.signedOutCard = document.getElementById('demo-signed-out-card');
     this.userWelcome = document.getElementById('user-welcome');
 
     // Bind events.
@@ -53,7 +52,6 @@ SmartHome.prototype.initWasher = () => {
   console.log("Logged in as default user");
   this.uid = "123";
   this.smarthome.userWelcome.innerHTML = "Welcome user 123!";
-  this.smarthome.signedOutCard.style.display = 'none';
 
   this.smarthome.handleData();
   this.smarthome.washer.style.display = "block";
