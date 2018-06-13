@@ -92,6 +92,7 @@ app.onSync(() => {
           swVersion: '1.0.1',
         },
         attributes: {
+          pausable: true,
           dataTypesSupported: [{
             name: 'temperature',
             data_type: [{
@@ -202,11 +203,10 @@ app.onExecute((body) => {
     }],
   };
   for (const input of body.inputs) {
-    for (let k = 0; k < input.payload.commands.length; k++) {
-      const command = input.payload.commands[k];
+    for (const command of input.payload.commands) {
       for (const device of command.devices) {
         const deviceId = device.id;
-        payload.commands[k].ids.push(deviceId);
+        payload.commands[0].ids.push(deviceId);
         for (const execution of command.execution) {
           const execCommand = execution.command;
           const {params} = execution;
@@ -320,19 +320,6 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
             on: snapshotVal.OnOff.on,
             isPaused: snapshotVal.StartStop.isPaused,
             isRunning: snapshotVal.StartStop.isRunning,
-            currentRunCycle: [{
-              currentCycle: 'rinse',
-              nextCycle: 'spin',
-              lang: 'en',
-            }],
-            currentTotalRemainingTime: 1212,
-            currentCycleRemainingTime: 301,
-            currentModeSettings: {
-              load: snapshotVal.Modes.load,
-            },
-            currentToggleSettings: {
-              Turbo: snapshotVal.Toggles.Turbo,
-            },
           },
         },
       },
