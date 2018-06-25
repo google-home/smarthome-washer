@@ -5,7 +5,7 @@
     "node": ">=6.11.1"
   },
   "dependencies": {
-    "actions-on-google": "^2.1.0",
+    "actions-on-google": "^2.2.0",
     "cors": "^2.8.4",
     "firebase": "^4.0.0",
     "firebase-admin": "^5.8.1",
