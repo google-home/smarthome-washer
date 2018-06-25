@@ -247,40 +247,13 @@ exports.smarthome = functions.https.onRequest(app);
 
 exports.requestsync = functions.https.onRequest((request, response) => {
   console.info('Request SYNC for user 123');
-  const https = require('https');
-  const postData = {
-    agentUserId: '123', /* Hardcoded user ID */
-  };
-  return cors(request, response, () => {
-    const options = {
-      hostname: 'homegraph.googleapis.com',
-      port: 443,
-      path: `/v1/devices:requestSync?key=${app.key}`,
-      method: 'POST',
-    };
-    return new Promise((resolve, reject) => {
-      let responseData = '';
-      const req = https.request(options, (res) => {
-        res.on('data', (d) => {
-          responseData += d.toString();
-        });
-        res.on('end', () => {
-          resolve(responseData);
-        });
-      });
-      req.on('error', (e) => {
-        reject(e);
-      });
-      // Write data to request body
-      req.write(JSON.stringify(postData));
-      req.end();
-    }).then((data) => {
+  app.requestSync('123')
+    .then((res) => {
       console.log('Request sync completed');
       response.json(data);
     }).catch((err) => {
       console.error(err);
     });
-  });
 });
 
 /**
