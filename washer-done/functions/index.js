@@ -315,7 +315,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
     });
 });
 
-const reportState = (url, data, jwt) => {
+const reportState = (data, jwt) => {
   console.log(JSON.stringify(data));
   const {google} = require('googleapis');
   const https = require('https');
