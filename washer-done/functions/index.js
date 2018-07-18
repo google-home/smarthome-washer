@@ -18,7 +18,6 @@
 
 const functions = require('firebase-functions');
 const {smarthome} = require('actions-on-google');
-const cors = require('cors')({origin: true});
 const util = require('util');
 const firebase = require('firebase');
 // Initialize Firebase
@@ -60,10 +59,18 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     .json(obj);
 });
 
+let jwt;
+try {
+  jwt = require('./key.json');
+} catch (e) {
+  console.warn('Service account key is not found');
+  console.warn('Report state will be unavailable');
+}
+
 const app = smarthome({
   debug: true,
   key: '<api-key>',
-  jwt: require('./key.json'),
+  jwt: jwt,
 });
 
 app.onSync(() => {
@@ -262,6 +269,11 @@ exports.requestsync = functions.https.onRequest((request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
   console.info('Firebase write event triggered this cloud function');
+  if (!app.jwt) {
+    console.warn('Service account key is not configured');
+    console.warn('Report state is unavailable');
+    return;
+  }
   const snapshotVal = event.data.val();
 
   const postData = {
