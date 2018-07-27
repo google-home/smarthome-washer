@@ -60,20 +60,35 @@ exports.faketoken = functions.https.onRequest((request, response) => {
 
 const app = smarthome({
   debug: true,
-  API_KEY: '<api-key>',
+  key: '<api-key>',
 });
 
 app.onSync((body) => {
-  // TODO: Implement SYNC response
+  // TODO: Implement full SYNC response
   return {
-    requestId: 'ff36a3cc-ec34-11e6-b1a0-64510650abcf',
+    requestId: body.requestId,
     payload: {
       agentUserId: '123',
-      devices: [],
+      devices: [{
+        id: 'washer',
+        type: 'action.devices.types.WASHER',
+        traits: [
+          'action.devices.traits.OnOff',
+        ],
+        name: {
+          defaultNames: ['My Washer'],
+          name: 'Washer',
+          nicknames: ['Washer'],
+        },
+        deviceInfo: {
+          manufacturer: 'Acme Co',
+          model: 'acme-washer',
+          hwVersion: '1.0',
+          swVersion: '1.0.1',
+        },
+      }],
     },
-
   };
-  //  return {};
 });
 
 const queryFirebase = (deviceId) => firebaseRef.child(deviceId).once('value')

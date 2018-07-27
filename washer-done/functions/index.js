@@ -72,9 +72,9 @@ const app = smarthome({
   jwt: jwt,
 });
 
-app.onSync(() => {
+app.onSync((body) => {
   return {
-    requestId: 'ff36a3cc-ec34-11e6-b1a0-64510650abcf',
+    requestId: body.requestId,
     payload: {
       agentUserId: '123',
       devices: [{
