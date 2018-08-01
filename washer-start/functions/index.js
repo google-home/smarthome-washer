@@ -18,12 +18,10 @@
 
 const functions = require('firebase-functions');
 const {smarthome} = require('actions-on-google');
-const cors = require('cors')({origin: true});
 const util = require('util');
 const firebase = require('firebase');
 // Initialize Firebase
-const config = functions.config().firebase;
-firebase.initializeApp(config);
+firebase.initializeApp();
 // eslint-disable-next-line no-unused-vars
 const firebaseRef = firebase.database().ref('/');
 

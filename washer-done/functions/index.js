@@ -21,8 +21,7 @@ const {smarthome} = require('actions-on-google');
 const util = require('util');
 const firebase = require('firebase');
 // Initialize Firebase
-const config = functions.config().firebase;
-firebase.initializeApp(config);
+firebase.initializeApp();
 const firebaseRef = firebase.database().ref('/');
 
 exports.fakeauth = functions.https.onRequest((request, response) => {
@@ -274,7 +273,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
     console.warn('Report state is unavailable');
     return;
   }
-  const snapshotVal = event.data.val();
+  const snapshotVal = event.after.val();
 
   const postData = {
     requestId: 'ff36a3cc', /* Any unique ID */
