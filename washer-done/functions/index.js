@@ -19,10 +19,10 @@
 const functions = require('firebase-functions');
 const {smarthome} = require('actions-on-google');
 const util = require('util');
-const firebase = require('firebase');
+const admin = require('firebase-admin');
 // Initialize Firebase
-firebase.initializeApp();
-const firebaseRef = firebase.database().ref('/');
+admin.initializeApp();
+const firebaseRef = admin.database().ref('/');
 
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
