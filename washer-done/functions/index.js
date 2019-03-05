@@ -256,7 +256,7 @@ exports.requestsync = functions.https.onRequest((request, response) => {
   app.requestSync('123')
     .then((res) => {
       console.log('Request sync completed');
-      response.json(data);
+      response.json(res.data);
     }).catch((err) => {
       console.error(err);
     });
