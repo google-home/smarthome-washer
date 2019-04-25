@@ -134,38 +134,40 @@ app.onSync((body) => {
   };
 });
 
-const queryFirebase = (deviceId) => firebaseRef.child(deviceId).once('value')
-  .then((snapshot) => {
-    const snapshotVal = snapshot.val();
-    return {
-      on: snapshotVal.OnOff.on,
-      isPaused: snapshotVal.StartStop.isPaused,
-      isRunning: snapshotVal.StartStop.isRunning,
-      load: snapshotVal.Modes.load,
-      turbo: snapshotVal.Toggles.Turbo,
-    };
-  });
+const queryFirebase = async (deviceId) => {
+  const snapshot = await firebaseRef.child(deviceId).once('value');
+  const snapshotVal = snapshot.val();
+  return {
+    on: snapshotVal.OnOff.on,
+    isPaused: snapshotVal.StartStop.isPaused,
+    isRunning: snapshotVal.StartStop.isRunning,
+    load: snapshotVal.Modes.load,
+    turbo: snapshotVal.Toggles.Turbo,
+  };
+}
+const queryDevice = async (deviceId) => {
+  const data = await queryFirebase(deviceId);
+  return {
+    on: data.on,
+    isPaused: data.isPaused,
+    isRunning: data.isRunning,
+    currentRunCycle: [{
+      currentCycle: 'rinse',
+      nextCycle: 'spin',
+      lang: 'en',
+    }],
+    currentTotalRemainingTime: 1212,
+    currentCycleRemainingTime: 301,
+    currentModeSettings: {
+      load: data.load,
+    },
+    currentToggleSettings: {
+      Turbo: data.turbo,
+    },
+  };
+}
 
-const queryDevice = (deviceId) => queryFirebase(deviceId).then((data) => ({
-  on: data.on,
-  isPaused: data.isPaused,
-  isRunning: data.isRunning,
-  currentRunCycle: [{
-    currentCycle: 'rinse',
-    nextCycle: 'spin',
-    lang: 'en',
-  }],
-  currentTotalRemainingTime: 1212,
-  currentCycleRemainingTime: 301,
-  currentModeSettings: {
-    load: data.load,
-  },
-  currentToggleSettings: {
-    Turbo: data.turbo,
-  },
-}));
-
-app.onQuery((body) => {
+app.onQuery(async (body) => {
   const {requestId} = body;
   const payload = {
     devices: {},
@@ -179,15 +181,15 @@ app.onQuery((body) => {
           // Add response to device payload
           payload.devices[deviceId] = data;
         }
-        ));
+      ));
     }
   }
   // Wait for all promises to resolve
-  return Promise.all(queryPromises).then((values) => ({
+  await Promise.all(queryPromises)
+  return {
     requestId: requestId,
     payload: payload,
-  })
-  );
+  };
 });
 
 app.onExecute((body) => {
@@ -251,22 +253,23 @@ app.onExecute((body) => {
 
 exports.smarthome = functions.https.onRequest(app);
 
-exports.requestsync = functions.https.onRequest((request, response) => {
+exports.requestsync = functions.https.onRequest(async (request, response) => {
   console.info('Request SYNC for user 123');
-  app.requestSync('123')
-    .then((res) => {
-      console.log('Request sync completed');
-      response.json(res.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+  try {
+    await app.requestSync('123');
+    console.log('Request sync completed');
+    response.json(res.data);
+  } catch (err) {
+    console.error(err);
+    response.status(500).send(`Error requesting sync: ${err}`)
+  }
 });
 
 /**
  * Send a REPORT STATE call to the homegraph when data for any device id
  * has been changed.
  */
-exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
+exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (event) => {
   console.info('Firebase write event triggered this cloud function');
   if (!app.jwt) {
     console.warn('Service account key is not configured');
@@ -292,9 +295,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
     },
   };
 
-  return app.reportState(postData)
-    .then((data) => {
-      console.log('Report state came back');
-      console.info(data);
-    });
+  const data = await app.reportState(postData);
+  console.log('Report state came back');
+  console.info(data);
 });

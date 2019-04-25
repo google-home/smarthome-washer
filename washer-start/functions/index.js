@@ -91,22 +91,25 @@ app.onSync((body) => {
   };
 });
 
-const queryFirebase = (deviceId) => firebaseRef.child(deviceId).once('value')
-  .then((snapshot) => {
-    const snapshotVal = snapshot.val();
-    return {
-      on: snapshotVal.OnOff.on,
-      isPaused: snapshotVal.StartStop.isPaused,
-      isRunning: snapshotVal.StartStop.isRunning,
-    };
-  });
+const queryFirebase = async (deviceId) => {
+  const snapshot = await firebaseRef.child(deviceId).once('value');
+  const snapshotVal = snapshot.val();
+  return {
+    on: snapshotVal.OnOff.on,
+    isPaused: snapshotVal.StartStop.isPaused,
+    isRunning: snapshotVal.StartStop.isRunning,
+  };
+}
 
 // eslint-disable-next-line
-const queryDevice = (deviceId) => queryFirebase(deviceId).then((data) => ({
-  on: data.on,
-  isPaused: data.isPaused,
-  isRunning: data.isRunning,
-}));
+const queryDevice = async (deviceId) => {
+  const data = await queryFirebase(deviceId);
+  return {
+    on: data.on,
+    isPaused: data.isPaused,
+    isRunning: data.isRunning,
+  }
+}
 
 app.onQuery((body) => {
   // TODO: Implement QUERY response
@@ -120,15 +123,16 @@ app.onExecute((body) => {
 
 exports.smarthome = functions.https.onRequest(app);
 
-exports.requestsync = functions.https.onRequest((request, response) => {
+exports.requestsync = functions.https.onRequest(async (request, response) => {
   console.info('Request SYNC for user 123');
-  app.requestSync('123')
-    .then((res) => {
-      console.log('Request sync completed');
-      response.json(res.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+  try {
+    const res = await app.requestSync('123');
+    console.log('Request sync completed');
+    response.json(res.data);
+  } catch (err) {
+    console.error(err);
+    response.status(500).send(`Error requesting sync: ${err}`)
+  }
 });
 
 /**

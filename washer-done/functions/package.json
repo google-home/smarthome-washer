@@ -2,7 +2,7 @@
   "name": "smarthome-washer",
   "description": "Codelab for controlling devices through the Google Assistant",
   "engines": {
-    "node": "6"
+    "node": "8"
   },
   "dependencies": {
     "actions-on-google": "^2.2.0",
