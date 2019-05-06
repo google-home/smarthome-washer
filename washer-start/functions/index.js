@@ -139,6 +139,6 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  * Send a REPORT STATE call to the homegraph when data for any device id
  * has been changed.
  */
-exports.reportstate = functions.database.ref('{deviceId}').onWrite((event) => {
+exports.reportstate = functions.database.ref('{deviceId}').onWrite((change, context) => {
   console.info('Firebase write event triggered this cloud function');
 });

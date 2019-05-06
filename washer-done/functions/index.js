@@ -269,14 +269,14 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  * Send a REPORT STATE call to the homegraph when data for any device id
  * has been changed.
  */
-exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (event) => {
+exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change, context) => {
   console.info('Firebase write event triggered this cloud function');
   if (!app.jwt) {
     console.warn('Service account key is not configured');
     console.warn('Report state is unavailable');
     return;
   }
-  const snapshotVal = event.after.val();
+  const snapshot = change.after.val();
 
   const postData = {
     requestId: 'ff36a3cc', /* Any unique ID */
@@ -285,10 +285,10 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (event)
       devices: {
         states: {
           /* Report the current state of our washer */
-          [event.params.deviceId]: {
-            on: snapshotVal.OnOff.on,
-            isPaused: snapshotVal.StartStop.isPaused,
-            isRunning: snapshotVal.StartStop.isRunning,
+          [context.params.deviceId]: {
+            on: snapshot.OnOff.on,
+            isPaused: snapshot.StartStop.isPaused,
+            isRunning: snapshot.StartStop.isRunning,
           },
         },
       },
