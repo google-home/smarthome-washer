@@ -254,6 +254,7 @@ app.onExecute((body) => {
 exports.smarthome = functions.https.onRequest(app);
 
 exports.requestsync = functions.https.onRequest(async (request, response) => {
+  response.set('Access-Control-Allow-Origin', '*');
   console.info('Request SYNC for user 123');
   try {
     await app.requestSync('123');
