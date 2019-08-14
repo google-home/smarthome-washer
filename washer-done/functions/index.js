@@ -84,8 +84,6 @@ app.onSync((body) => {
           'action.devices.traits.OnOff',
           'action.devices.traits.StartStop',
           'action.devices.traits.RunCycle',
-          'action.devices.traits.Modes',
-          'action.devices.traits.Toggles',
         ],
         name: {
           defaultNames: ['My Washer'],
@@ -100,34 +98,6 @@ app.onSync((body) => {
         },
         attributes: {
           pausable: true,
-          availableModes: [{
-            name: 'load',
-            name_values: [{
-              name_synonym: ['load'],
-              lang: 'en',
-            }],
-            settings: [{
-              setting_name: 'small',
-              setting_values: [{
-                setting_synonym: ['small'],
-                lang: 'en',
-              }],
-            }, {
-              setting_name: 'large',
-              setting_values: [{
-                setting_synonym: ['large'],
-                lang: 'en',
-              }],
-            }],
-            ordered: true,
-          }],
-          availableToggles: [{
-            name: 'Turbo',
-            name_values: [{
-              name_synonym: ['turbo'],
-              lang: 'en',
-            }],
-          }],
         },
       }],
     },
@@ -141,8 +111,6 @@ const queryFirebase = async (deviceId) => {
     on: snapshotVal.OnOff.on,
     isPaused: snapshotVal.StartStop.isPaused,
     isRunning: snapshotVal.StartStop.isRunning,
-    load: snapshotVal.Modes.load,
-    turbo: snapshotVal.Toggles.Turbo,
   };
 }
 const queryDevice = async (deviceId) => {
@@ -158,12 +126,6 @@ const queryDevice = async (deviceId) => {
     }],
     currentTotalRemainingTime: 1212,
     currentCycleRemainingTime: 301,
-    currentModeSettings: {
-      load: data.load,
-    },
-    currentToggleSettings: {
-      Turbo: data.turbo,
-    },
   };
 }
 
@@ -230,16 +192,6 @@ app.onExecute((body) => {
               });
               payload.commands[0].states.isPaused = params.pause;
               break;
-            case 'action.devices.commands.SetModes':
-              firebaseRef.child(deviceId).child('Modes').update({
-                load: params.updateModeSettings.load,
-              });
-              break;
-            case 'action.devices.commands.SetToggles':
-              firebaseRef.child(deviceId).child('Toggles').update({
-                Turbo: params.updateToggleSettings.Turbo,
-              });
-              break;
           }
         }
       }
@@ -300,3 +252,4 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
   console.log('Report state came back');
   console.info(data);
 });
+

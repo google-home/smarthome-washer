@@ -65,51 +65,22 @@ const app = smarthome({
 
 app.onSync((body) => {
   // TODO: Implement full SYNC response
-  return {
-    requestId: body.requestId,
-    payload: {
-      agentUserId: '123',
-      devices: [{
-        id: 'washer',
-        type: 'action.devices.types.WASHER',
-        traits: [
-          'action.devices.traits.OnOff',
-        ],
-        name: {
-          defaultNames: ['My Washer'],
-          name: 'Washer',
-          nicknames: ['Washer'],
-        },
-        deviceInfo: {
-          manufacturer: 'Acme Co',
-          model: 'acme-washer',
-          hwVersion: '1.0',
-          swVersion: '1.0.1',
-        },
-      }],
-    },
-  };
+  return {};
 });
 
 const queryFirebase = async (deviceId) => {
   const snapshot = await firebaseRef.child(deviceId).once('value');
   const snapshotVal = snapshot.val();
-  return {
-    on: snapshotVal.OnOff.on,
-    isPaused: snapshotVal.StartStop.isPaused,
-    isRunning: snapshotVal.StartStop.isRunning,
-  };
-}
+  //TODO: Define device states to return
+  return {};
+};
 
 // eslint-disable-next-line
 const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
-  return {
-    on: data.on,
-    isPaused: data.isPaused,
-    isRunning: data.isRunning,
-  }
-}
+  //TODO: Define device states to return
+  return {};
+};
 
 app.onQuery((body) => {
   // TODO: Implement QUERY response
@@ -132,7 +103,7 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
     response.json(res.data);
   } catch (err) {
     console.error(err);
-    response.status(500).send(`Error requesting sync: ${err}`)
+    response.status(500).send(`Error requesting sync: ${err}`);
   }
 });
 
@@ -143,3 +114,4 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
 exports.reportstate = functions.database.ref('{deviceId}').onWrite((change, context) => {
   console.info('Firebase write event triggered this cloud function');
 });
+
