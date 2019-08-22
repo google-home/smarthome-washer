@@ -60,7 +60,7 @@ exports.faketoken = functions.https.onRequest((request, response) => {
 
 const app = smarthome({
   debug: true,
-  key: '<api-key>',
+//TODO: Add authorization credentials
 });
 
 app.onSync((body) => {
@@ -86,6 +86,11 @@ app.onQuery((body) => {
   // TODO: Implement QUERY response
   return {};
 });
+
+const commandDevice = async (command,deviceId) => {
+  //TODO:Add commands to change device states
+  };
+};
 
 app.onExecute((body) => {
   // TODO: Implement EXECUTE response

@@ -68,7 +68,6 @@ try {
 
 const app = smarthome({
   debug: true,
-  key: '<api-key>',
   jwt: jwt,
 });
 
@@ -154,7 +153,40 @@ app.onQuery(async (body) => {
   };
 });
 
-app.onExecute((body) => {
+const commandDevice = async (command,deviceId) => {
+  for (const execution of command.execution) {
+    const execCommand = execution.command;
+    const {params} = execution;
+    switch (execCommand) {
+      case 'action.devices.commands.OnOff':
+        firebaseRef.child(deviceId).child('OnOff').update({
+          on: params.on,
+        });
+        return{
+          on: params.on,
+        };
+        break;
+      case 'action.devices.commands.StartStop':
+        firebaseRef.child(deviceId).child('StartStop').update({
+          isRunning: params.start,
+        });
+        return{
+          isRunning: params.start,
+        };
+        break;
+      case 'action.devices.commands.PauseUnpause':
+        firebaseRef.child(deviceId).child('StartStop').update({
+          isPaused: params.pause,
+        });
+        return{
+          isPaused: params.pause,
+        };
+        break;
+    }
+  }
+};
+
+app.onExecute(async (body) => {
   const {requestId} = body;
   const payload = {
     commands: [{
@@ -165,43 +197,27 @@ app.onExecute((body) => {
       },
     }],
   };
+  const executePromises = [];
   for (const input of body.inputs) {
     for (const command of input.payload.commands) {
       for (const device of command.devices) {
         const deviceId = device.id;
         payload.commands[0].ids.push(deviceId);
-        for (const execution of command.execution) {
-          const execCommand = execution.command;
-          const {params} = execution;
-          switch (execCommand) {
-            case 'action.devices.commands.OnOff':
-              firebaseRef.child(deviceId).child('OnOff').update({
-                on: params.on,
-              });
-              payload.commands[0].states.on = params.on;
-              break;
-            case 'action.devices.commands.StartStop':
-              firebaseRef.child(deviceId).child('StartStop').update({
-                isRunning: params.start,
-              });
-              payload.commands[0].states.isRunning = params.start;
-              break;
-            case 'action.devices.commands.PauseUnpause':
-              firebaseRef.child(deviceId).child('StartStop').update({
-                isPaused: params.pause,
-              });
-              payload.commands[0].states.isPaused = params.pause;
-              break;
-          }
-        }
+        executePromises.push(commandDevice(command,deviceId)
+            .then((data) => {
+              Object.assign(payload.commands[0].states,data);
+            }
+            ));
       }
     }
   }
+  await Promise.all(executePromises)
   return {
     requestId: requestId,
     payload: payload,
   };
 });
+
 
 exports.smarthome = functions.https.onRequest(app);
 
