@@ -89,7 +89,6 @@ app.onQuery((body) => {
 
 const commandDevice = async (command,deviceId) => {
   //TODO:Add commands to change device states
-  };
 };
 
 app.onExecute((body) => {
