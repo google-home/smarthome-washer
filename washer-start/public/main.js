@@ -27,9 +27,7 @@ function SmartHome() {
     this.updateButton.addEventListener('click', this.updateState.bind(this));
     this.washer = document.getElementById('demo-washer');
     this.requestSync = document.getElementById('request-sync');
-    this.requestSync.addEventListener('click', () => {
-    //TODO:Implement click listener for request sync
-    });
+    // TODO: Implement click listener for request sync
 
     this.initFirebase();
     this.initWasher();
