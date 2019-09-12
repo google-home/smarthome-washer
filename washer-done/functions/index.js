@@ -95,6 +95,7 @@ app.onSync((body) => {
           hwVersion: '1.0',
           swVersion: '1.0.1',
         },
+        willReportState: true,
         attributes: {
           pausable: true,
         },
@@ -225,7 +226,7 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   console.info('Request SYNC for user 123');
   try {
-    await app.requestSync('123');
+    const res = await app.requestSync('123');
     console.log('Request sync completed');
     response.json(res.data);
   } catch (err) {

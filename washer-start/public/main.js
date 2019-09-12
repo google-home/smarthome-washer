@@ -55,15 +55,15 @@ SmartHome.prototype.setToken = (token) => {
 };
 
 SmartHome.prototype.handleData = () => {
-  let uid = this.uid;
-  let elOnOff = document.getElementById('demo-washer-onOff');
-  let elRunCycle = document.getElementById('demo-washer-runCycle');
-  let elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
-  let elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
+  const uid = this.uid;
+  const elOnOff = document.getElementById('demo-washer-onOff');
+  const elRunCycle = document.getElementById('demo-washer-runCycle');
+  const elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
+  const elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
 
   firebase.database().ref('/').child('washer').on("value", (snapshot) => {
     if (snapshot.exists()) {
-      var washerState = snapshot.val();
+      const washerState = snapshot.val();
       console.log(washerState)
 
       if (washerState.OnOff.on) elOnOff.MaterialSwitch.on();
@@ -83,12 +83,12 @@ SmartHome.prototype.handleData = () => {
 }
 
 SmartHome.prototype.updateState = () => {
-  let elOnOff = document.getElementById('demo-washer-onOff');
-  let elRunCycle = document.getElementById('demo-washer-runCycle');
-  let elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
-  let elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
+  const elOnOff = document.getElementById('demo-washer-onOff');
+  const elRunCycle = document.getElementById('demo-washer-runCycle');
+  const elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
+  const elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
 
-  let pkg = {
+  const pkg = {
     OnOff: { on: elOnOff.classList.contains('is-checked') },
     RunCycle: { dummy: elRunCycle.classList.contains('is-checked') },
     StartStop: {

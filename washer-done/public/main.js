@@ -27,15 +27,15 @@ function SmartHome() {
     this.updateButton.addEventListener('click', this.updateState.bind(this));
     this.washer = document.getElementById('demo-washer');
     this.requestSync = document.getElementById('request-sync');
-    this.requestSync.addEventListener('click', () => {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          console.log("Request SYNC success!");
-        }
-      };
-      xhttp.open("POST", "https://us-central1-<project-id>.cloudfunctions.net/requestsync", true);
-      xhttp.send();
+    this.requestSync.addEventListener('click', async () => {
+      try {
+        const response =
+          await fetch('https://us-central1-<project-id>.cloudfunctions.net/requestsync');
+        console.log(response.status == 200 ?
+          'Request SYNC success!' : `Request SYNC unexpected status: ${response.status}`);
+      } catch (err) {
+        console.error('Request SYNC error', err);
+      }
     });
 
     this.initFirebase();
@@ -62,15 +62,15 @@ SmartHome.prototype.setToken = (token) => {
 };
 
 SmartHome.prototype.handleData = () => {
-  let uid = this.uid;
-  let elOnOff = document.getElementById('demo-washer-onOff');
-  let elRunCycle = document.getElementById('demo-washer-runCycle');
-  let elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
-  let elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
+  const uid = this.uid;
+  const elOnOff = document.getElementById('demo-washer-onOff');
+  const elRunCycle = document.getElementById('demo-washer-runCycle');
+  const elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
+  const elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
 
   firebase.database().ref('/').child('washer').on("value", (snapshot) => {
     if (snapshot.exists()) {
-      var washerState = snapshot.val();
+      const washerState = snapshot.val();
       console.log(washerState)
 
       if (washerState.OnOff.on) elOnOff.MaterialSwitch.on();
@@ -90,12 +90,12 @@ SmartHome.prototype.handleData = () => {
 }
 
 SmartHome.prototype.updateState = () => {
-  let elOnOff = document.getElementById('demo-washer-onOff');
-  let elRunCycle = document.getElementById('demo-washer-runCycle');
-  let elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
-  let elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
+  const elOnOff = document.getElementById('demo-washer-onOff');
+  const elRunCycle = document.getElementById('demo-washer-runCycle');
+  const elStartStopPaused = document.getElementById('demo-washer-startStopPaused');
+  const elStartStopRunning = document.getElementById('demo-washer-startStopRunning');
 
-  let pkg = {
+  const pkg = {
     OnOff: { on: elOnOff.classList.contains('is-checked') },
     RunCycle: { dummy: elRunCycle.classList.contains('is-checked') },
     StartStop: {

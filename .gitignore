@@ -1,13 +1,6 @@
-washer-start/functions/node_modules
-washer-start/functions/package-lock.json
-washer-start/.firebaserc
+**/functions/node_modules
+**/functions/package-lock.json
+**/.firebaserc
+**/.firebase
 
-washer-done/functions/node_modules
-washer-done/functions/package-lock.json
-washer-done/.firebaserc
-
-
-washer-start/functions/key.json
-washer-done/functions/key.json
-
-washer-iot/.idea/
+**/functions/key.json
