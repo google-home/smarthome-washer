@@ -135,16 +135,15 @@ app.onQuery(async (body) => {
     devices: {},
   };
   const queryPromises = [];
-  for (const input of body.inputs) {
-    for (const device of input.payload.devices) {
-      const deviceId = device.id;
-      queryPromises.push(queryDevice(deviceId)
-        .then((data) => {
-          // Add response to device payload
-          payload.devices[deviceId] = data;
-        }
-      ));
-    }
+  const intent = body.inputs[0];
+  for (const device of intent.payload.devices) {
+    const deviceId = device.id;
+    queryPromises.push(queryDevice(deviceId)
+      .then((data) => {
+        // Add response to device payload
+        payload.devices[deviceId] = data;
+      }
+    ));
   }
   // Wait for all promises to resolve
   await Promise.all(queryPromises)
@@ -154,68 +153,62 @@ app.onQuery(async (body) => {
   };
 });
 
-const commandDevice = async (command,deviceId) => {
-  for (const execution of command.execution) {
-    const execCommand = execution.command;
-    const {params} = execution;
-    switch (execCommand) {
-      case 'action.devices.commands.OnOff':
-        firebaseRef.child(deviceId).child('OnOff').update({
-          on: params.on,
-        });
-        return{
-          on: params.on,
-        };
-        break;
-      case 'action.devices.commands.StartStop':
-        firebaseRef.child(deviceId).child('StartStop').update({
-          isRunning: params.start,
-        });
-        return{
-          isRunning: params.start,
-        };
-        break;
-      case 'action.devices.commands.PauseUnpause':
-        firebaseRef.child(deviceId).child('StartStop').update({
-          isPaused: params.pause,
-        });
-        return{
-          isPaused: params.pause,
-        };
-        break;
-    }
+const updateDevice = async (execution,deviceId) => {
+  const {params,command} = execution;
+  let state, ref;
+  switch (command) {
+    case 'action.devices.commands.OnOff':
+      state = {on: params.on};
+      ref = firebaseRef.child(deviceId).child('OnOff');
+      break;
+    case 'action.devices.commands.StartStop':
+      state = {isRunning: params.start};
+      ref = firebaseRef.child(deviceId).child('StartStop');
+      break;
+    case 'action.devices.commands.PauseUnpause':
+      state = {isPaused: params.pause};
+      ref = firebaseRef.child(deviceId).child('StartStop');
+      break;
   }
+
+  return ref.update(state)
+    .then(() => state);
 };
 
 app.onExecute(async (body) => {
   const {requestId} = body;
-  const payload = {
-    commands: [{
-      ids: [],
-      status: 'SUCCESS',
-      states: {
-        online: true,
-      },
-    }],
+  // Execution results are grouped by status
+  const result = {
+    ids: [],
+    status: 'SUCCESS',
+    states: {
+      online: true,
+    },
   };
+
   const executePromises = [];
-  for (const input of body.inputs) {
-    for (const command of input.payload.commands) {
-      for (const device of command.devices) {
-        const deviceId = device.id;
-        payload.commands[0].ids.push(deviceId);
-        executePromises.push(commandDevice(command,deviceId)
+  const intent = body.inputs[0];
+  for (const command of intent.payload.commands) {
+    for (const device of command.devices) {
+      for (const execution of command.execution) {
+        executePromises.push(
+          updateDevice(execution,device.id)
             .then((data) => {
-              Object.assign(payload.commands[0].states,data);
-            }
-            ));
+              result.ids.push(device.id);
+              Object.assign(result.states, data);
+            })
+            .catch(() => console.error(`Unable to update ${device.id}`))
+        );
       }
     }
   }
+
   await Promise.all(executePromises)
   return {
     requestId: requestId,
-    payload: payload,
+    payload: {
+      commands: [result],
+    },
   };
 });
 
