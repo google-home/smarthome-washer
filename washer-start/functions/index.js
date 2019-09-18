@@ -87,7 +87,7 @@ app.onQuery((body) => {
   return {};
 });
 
-const commandDevice = async (command,deviceId) => {
+const updateDevice = async (execution,deviceId) => {
   // TODO: Add commands to change device states
 };
 
