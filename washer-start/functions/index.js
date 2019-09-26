@@ -101,14 +101,9 @@ exports.smarthome = functions.https.onRequest(app);
 exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   console.info('Request SYNC for user 123');
-  try {
-    const res = await app.requestSync('123');
-    console.log('Request sync completed');
-    response.json(res.data);
-  } catch (err) {
-    console.error(err);
-    response.status(500).send(`Error requesting sync: ${err}`);
-  }
+
+  // TODO: Call HomeGraph API for user '123'
+  response.status(500).send(`Request SYNC not implemented`);
 });
 
 /**
@@ -117,5 +112,7 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite((change, context) => {
   console.info('Firebase write event triggered this cloud function');
+
+  // TODO: Get latest state and call HomeGraph API
 });
 

@@ -27,7 +27,15 @@ function SmartHome() {
     this.updateButton.addEventListener('click', this.updateState.bind(this));
     this.washer = document.getElementById('demo-washer');
     this.requestSync = document.getElementById('request-sync');
-    // TODO: Implement click listener for request sync
+    this.requestSync.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/requestsync');
+        console.log(response.status == 200 ?
+          'Request SYNC success!' : `Request SYNC unexpected status: ${response.status}`);
+      } catch (err) {
+        console.error('Request SYNC error', err);
+      }
+    });
 
     this.initFirebase();
     this.initWasher();

@@ -29,8 +29,7 @@ function SmartHome() {
     this.requestSync = document.getElementById('request-sync');
     this.requestSync.addEventListener('click', async () => {
       try {
-        const response =
-          await fetch('https://us-central1-<project-id>.cloudfunctions.net/requestsync');
+        const response = await fetch('/requestsync');
         console.log(response.status == 200 ?
           'Request SYNC success!' : `Request SYNC unexpected status: ${response.status}`);
       } catch (err) {
