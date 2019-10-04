@@ -18,11 +18,20 @@
 
 const functions = require('firebase-functions');
 const {smarthome} = require('actions-on-google');
+const {google} = require('googleapis');
 const util = require('util');
 const admin = require('firebase-admin');
 // Initialize Firebase
 admin.initializeApp();
 const firebaseRef = admin.database().ref('/');
+// Initialize Homegraph
+const auth = new google.auth.GoogleAuth({
+  scopes: ['https://www.googleapis.com/auth/homegraph']
+});
+const homegraph = google.homegraph({
+  version: 'v1',
+  auth: auth
+});
 
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
@@ -60,7 +69,6 @@ exports.faketoken = functions.https.onRequest((request, response) => {
 
 const app = smarthome({
   debug: true,
-  // TODO: Add authorization credentials
 });
 
 app.onSync((body) => {

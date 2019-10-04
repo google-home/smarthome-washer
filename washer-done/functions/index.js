@@ -18,11 +18,20 @@
 
 const functions = require('firebase-functions');
 const {smarthome} = require('actions-on-google');
+const {google} = require('googleapis');
 const util = require('util');
 const admin = require('firebase-admin');
 // Initialize Firebase
 admin.initializeApp();
 const firebaseRef = admin.database().ref('/');
+// Initialize Homegraph
+const auth = new google.auth.GoogleAuth({
+  scopes: ['https://www.googleapis.com/auth/homegraph']
+});
+const homegraph = google.homegraph({
+  version: 'v1',
+  auth: auth
+});
 
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
@@ -58,17 +67,8 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     .json(obj);
 });
 
-let jwt;
-try {
-  jwt = require('./key.json');
-} catch (e) {
-  console.warn('Service account key is not found');
-  console.warn('Report state will be unavailable');
-}
-
 const app = smarthome({
   debug: true,
-  jwt: jwt,
 });
 
 app.onSync((body) => {
@@ -219,8 +219,12 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   console.info('Request SYNC for user 123');
   try {
-    const res = await app.requestSync('123');
-    console.log('Request sync completed');
+    const res = await homegraph.devices.requestSync({
+      requestBody: {
+        agentUserId: '123'
+      }
+    });
+    console.info('Request sync response:', res.status, res.data);
     response.json(res.data);
   } catch (err) {
     console.error(err);
@@ -234,14 +238,9 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change, context) => {
   console.info('Firebase write event triggered this cloud function');
-  if (!app.jwt) {
-    console.warn('Service account key is not configured');
-    console.warn('Report state is unavailable');
-    return;
-  }
   const snapshot = change.after.val();
 
-  const postData = {
+  const requestBody = {
     requestId: 'ff36a3cc', /* Any unique ID */
     agentUserId: '123', /* Hardcoded user ID */
     payload: {
@@ -258,8 +257,9 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
     },
   };
 
-  const data = await app.reportState(postData);
-  console.log('Report state came back');
-  console.info(data);
+  const res = await homegraph.devices.reportStateAndNotification({
+    requestBody
+  });
+  console.info('Report state response:', res.status, res.data);
 });
 
