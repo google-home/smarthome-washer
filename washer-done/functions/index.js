@@ -77,27 +77,30 @@ app.onSync((body) => {
     payload: {
       agentUserId: '123',
       devices: [{
-        id: 'washer',
-        type: 'action.devices.types.WASHER',
+        id: '1',
+        type: 'action.devices.types.LIGHT',
         traits: [
           'action.devices.traits.OnOff',
-          'action.devices.traits.StartStop',
-          'action.devices.traits.RunCycle',
+          'action.devices.traits.Brightness',
+          'action.devices.traits.ColorSetting',
         ],
         name: {
-          defaultNames: ['My Washer'],
-          name: 'Washer',
-          nicknames: ['Washer'],
+          defaultNames: ['My Test Light'],
+          name: 'Light',
+          nicknames: ['Patio Light'],
         },
         deviceInfo: {
-          manufacturer: 'Acme Co',
-          model: 'acme-washer',
+          manufacturer: 'Siddhy Co',
+          model: 'Siddhys RGB Bulb',
           hwVersion: '1.0',
           swVersion: '1.0.1',
         },
         willReportState: true,
         attributes: {
-          pausable: true,
+          colorModel: 'rgb',
+          colorTemperatureRange: {
+            temperatureMinK: 2000,
+            temperatureMaxK: 6500
         },
       }],
     },
@@ -109,23 +112,12 @@ const queryFirebase = async (deviceId) => {
   const snapshotVal = snapshot.val();
   return {
     on: snapshotVal.OnOff.on,
-    isPaused: snapshotVal.StartStop.isPaused,
-    isRunning: snapshotVal.StartStop.isRunning,
   };
 }
 const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
   return {
     on: data.on,
-    isPaused: data.isPaused,
-    isRunning: data.isRunning,
-    currentRunCycle: [{
-      currentCycle: 'rinse',
-      nextCycle: 'spin',
-      lang: 'en',
-    }],
-    currentTotalRemainingTime: 1212,
-    currentCycleRemainingTime: 301,
   };
 }
 
@@ -246,11 +238,9 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
     payload: {
       devices: {
         states: {
-          /* Report the current state of our washer */
+          /* Report the current state of our light */
           [context.params.deviceId]: {
             on: snapshot.OnOff.on,
-            isPaused: snapshot.StartStop.isPaused,
-            isRunning: snapshot.StartStop.isRunning,
           },
         },
       },
@@ -262,4 +252,3 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
   });
   console.info('Report state response:', res.status, res.data);
 });
-
