@@ -1,6 +1,6 @@
 {
-  "name": "smarthome-washer",
-  "description": "Codelab for controlling devices through the Google Assistant",
+  "name": "smarthome-control",
+  "description": "Codes for controlling devices through the Google Assistant By Sid",
   "engines": {
     "node": "8"
   },
