@@ -101,11 +101,13 @@ app.onSync((body) => {
           colorTemperatureRange: {
             temperatureMinK: 2000,
             temperatureMaxK: 6500
+          },
         },
       }],
     },
   };
 });
+
 
 const queryFirebase = async (deviceId) => {
   const snapshot = await firebaseRef.child(deviceId).once('value');
@@ -118,6 +120,8 @@ const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
   return {
     on: data.on,
+    brightness: data.brightness,
+    color: data.color
   };
 }
 
@@ -160,6 +164,14 @@ const updateDevice = async (execution,deviceId) => {
     case 'action.devices.commands.PauseUnpause':
       state = {isPaused: params.pause};
       ref = firebaseRef.child(deviceId).child('StartStop');
+      break;
+    case 'action.devices.commands.BrightnessAbsolute':
+      state = {brightness: params.brightness};
+      ref = firebaseRef.child(deviceId).child('Brightness');
+      break;
+    case 'action.devices.commands.ColorAbsolute':
+      state = {color: params.color};
+      ref = firebaseRef.child(deviceId).child('ColorSetting');
       break;
   }
 
@@ -241,6 +253,8 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
           /* Report the current state of our light */
           [context.params.deviceId]: {
             on: snapshot.OnOff.on,
+            brightness: snapshot.Brightness.brightness,
+            color: snapshot.ColorSetting.color
           },
         },
       },
