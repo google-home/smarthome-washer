@@ -62,11 +62,11 @@ using a Firebase backend.
     ```
 24. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
 25. To link to Google Assistant:  
-    On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
-    Navigate to Google Assistant > Settings > Home Control (under Assistant).   
-    Select the plus (+) icon in the bottom right corner.   
-    You should see your test app with the [test] prefix and the display name you set.   
-    Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
+    1. On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
+    2. Navigate to Google Assistant > Settings > Home Control (under Assistant).   
+    3. Select the plus (+) icon in the bottom right corner.   
+    4. You should see your test app with the [test] prefix and the display name you set.   
+    5. Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
 26. Now preprogrammed devices will appear in the Google Home app.   
 
 ## Pre-programmed smart devices   
