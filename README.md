@@ -24,14 +24,14 @@ using a Firebase backend.
    firebase login    
    ```   
 10. Install git and clone the project using:   
-   ```   
-   sudo apt-get install git   
-   git clone https://github.com/shivasiddharth/google-actions-smarthome   
-   ```   
+    ```   
+    sudo apt-get install git   
+    git clone https://github.com/shivasiddharth/google-actions-smarthome   
+    ```   
 11. Change directory using:   
-   ```   
-   cd /google-actions-smarthome/smarthome-control/functions/   
-   ```   
+    ```   
+    cd /google-actions-smarthome/smarthome-control/functions/   
+    ```   
 12. Navigate to the Google Cloud Console API Manager for your project id.    
 13. Enable the HomeGraph API.   
 14. Navigate to the Google Cloud Console API & Services page.      
@@ -62,11 +62,11 @@ using a Firebase backend.
     ```
 24. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
 25. To link to Google Assistant:  
-    . On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
-    . Navigate to Google Assistant > Settings > Home Control (under Assistant).   
-    . Select the plus (+) icon in the bottom right corner.   
-    . You should see your test app with the [test] prefix and the display name you set.   
-    . Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
+    On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
+    Navigate to Google Assistant > Settings > Home Control (under Assistant).   
+    Select the plus (+) icon in the bottom right corner.   
+    You should see your test app with the [test] prefix and the display name you set.   
+    Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
 26. Now preprogrammed devices will appear in the Google Home app.   
 
 ## Pre-programmed smart devices   
