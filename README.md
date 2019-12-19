@@ -1,15 +1,90 @@
-# Smart home washer codelab
+# Create your own smart devices  
 
-This project contains the source for for the [Smart Home Washer codelab](https://codelabs.developers.google.com/codelabs/smarthome-washer),
-which demonstrates how to integrate a smart home device with the Google Assistant
+This project contains the code which demonstrates the integration of smart home devices with the Google Assistant  
 using a Firebase backend.
 
-## Support
+## How to  
 
-- Stack Overflow: https://stackoverflow.com/questions/tagged/google-smart-home
+1. Go to the Actions on Google Developer Console.    
+2. Click New Project, enter a name for the project, and click CREATE PROJECT.     
+3. Select the Smart Home App.     
+4. On the Overview screen in the Actions console, select Smart home.   
+5. Choose the Smart home experience card, and you will then be directed to your project console.   
+6. Download and install Node.js from https://nodejs.org/en/download/.   
+7. To install the firebase CLI, run the following npm command from the terminal:
+   ```    
+   sudo npm install -g firebase-tools   
+   ```   
+8. To verify that the CLI has been installed correctly, run:   
+   ```   
+   firebase --version     
+   ```   
+9. Authorize the Firebase CLI with your Google account by running:   
+   ```    
+   firebase login    
+   ```   
+10. Install git and clone the project using:   
+   ```   
+   sudo apt-get install git   
+   git clone https://github.com/shivasiddharth/google-actions-smarthome   
+   ```   
+11. Change directory using:   
+   ```   
+   cd /google-actions-smarthome/smarthome-control/functions/   
+   ```   
+12. Navigate to the Google Cloud Console API Manager for your project id.    
+13. Enable the HomeGraph API.   
+14. Navigate to the Google Cloud Console API & Services page.      
+15. Select Create Credentials and create a Service account key.   
+16. Create a new Service account.   
+17. Use the role Service Account > Service Account Token Creator.    
+18. Create the account and download a JSON file. Save this in the functions folder as smart-home-key.json   
+19. Connect to firebase using:   
+    ```   
+    firebase use <project-id>   
+    ```   
+20. Deploy firebase using:   
+    ```   
+    sudo npm install   
+    firebase deploy   
+    ```   
+21. In the Actions console under Overview > Build your Action, select Add Action(s). Enter the URL for your cloud function that provides fulfillment for  the smart home intents and click Save.   
+    ```   
+    https://us-central1-<project-id>.cloudfunctions.net/smarthome   
+    ```   
+22. On the Develop > Invocation tab, add a Display Name for your Action, and click Save. This name will appear in the Google Home app.   
+23. To enable Account linking, select the Develop > Account linking option in the left navigation. Use these account linking settings:   
+    ```   
+    Client ID               : ABC123   
+    Client secret           : DEF456
+    Authorization URL       : https://us-central1-<project-id>.cloudfunctions.net/fakeauth  
+    Token URL               : https://us-central1-<project-id>.cloudfunctions.net/faketoken   
+    ```
+24. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
+25. To link to Google Assistant:  
+    . On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
+    . Navigate to Google Assistant > Settings > Home Control (under Assistant).   
+    . Select the plus (+) icon in the bottom right corner.   
+    . You should see your test app with the [test] prefix and the display name you set.   
+    . Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
+26. Now preprogrammed devices will appear in the Google Home app.   
 
-If you've found an error in this codelab, please file an issue:
-https://github.com/googlecodelabs/smarthome-washer/issues
+## Pre-programmed smart devices   
+
+The codes in this project will create the following devices:  
+1. 1 RGB light with brightness, color and on/off control.    
+2. 1 Normal light with brightness and on/off control.  
+3. 1 Fan with speed and on/off control (speed control trait is currently disabled by google hence the corresponding segments of codes have been commented out).   
+4. 1 Thermostat with mode change and temperature control.  
+5. 1 Temperature sensor device with temperature readout only.     
+
+## Adding or modifying the devices     
+
+1. The devices have been declared for SYNC    
+2. The QUERY for the corresponding devices    
+3. The EXECUTE for the correspodning devices    
+4. The REPORT STATE for the correspoding devices   
+
 
 ## License
 Copyright 2018 Google Inc.
