@@ -214,6 +214,28 @@ const devicesitems = [{
     queryOnlyTemperatureSetting: true,
     thermostatTemperatureUnit: 'C'
   },
+},
+{
+  id: '6',
+  type: 'action.devices.types.SWITCH',
+  traits: [
+    'action.devices.traits.OnOff'
+  ],
+  name: {
+    defaultNames: ['Plug Socket'],
+    name: 'Smart Switch',
+    nicknames: ['New Switch'],
+  },
+  deviceInfo: {
+    manufacturer: 'Siddhy Co',
+    model: 'Siddhys On/Off Switch',
+    hwVersion: '6.0',
+    swVersion: '7.0.1',
+  },
+  willReportState: true,
+  attributes: {
+    commandOnlyOnOff: false
+  },
 }]
 
 app.onSync((body) => {
@@ -260,6 +282,10 @@ const queryFirebase = async (deviceId) => {
       thermostatTemperatureAmbient: snapshotVal.TemperatureSetting.thermostatTemperatureAmbient,
       thermostatHumidityAmbient: snapshotVal.TemperatureSetting.thermostatHumidityAmbient
     };
+  } else if (deviceId == '6') {
+    return {
+      on: snapshotVal.OnOff.on
+    };
   }
 }
 
@@ -294,6 +320,10 @@ const queryDevice = async (deviceId) => {
     return {
       thermostatTemperatureAmbient: data.thermostatTemperatureAmbient,
       thermostatHumidityAmbient: data.thermostatHumidityAmbient
+    };
+  } else if (deviceId == '6') {
+    return {
+      on: data.on
     };
   }
 }
@@ -453,6 +483,10 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
     var load = {
       thermostatTemperatureAmbient: snapshot.thermostatTemperatureAmbient,
       thermostatHumidityAmbient: snapshot.thermostatHumidityAmbient
+    };
+  } else if (deviceID == '6') {
+    var load = {
+      on: snapshot.OnOff.on
     };
   }
 

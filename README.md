@@ -76,7 +76,8 @@ The codes in this project will create the following devices:
 2. 1 Normal light with brightness and on/off control.  
 3. 1 Fan with speed and on/off control (speed control trait is currently disabled by google hence the corresponding segments of codes have been commented out).   
 4. 1 Thermostat with mode change and temperature control.  
-5. 1 Temperature sensor device with temperature readout only.     
+5. 1 Temperature sensor device with temperature readout only.  
+6. 1 Plug/Switch.     
 
 ## Adding or modifying the devices     
 
