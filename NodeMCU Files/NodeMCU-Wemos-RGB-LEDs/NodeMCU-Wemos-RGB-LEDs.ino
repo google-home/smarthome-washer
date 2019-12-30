@@ -39,6 +39,9 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 #define FIREBASE_DATABASE_URL "ENTER YOUR FIREBASE DATABASE URL HERE"
 #define FIREBASE_KEY "ENTER YOUR FIREBASE KEY HERE"
 
+//Set the ID to the device id used in the index.json file
+static const String STRMDEVID =  "1";
+
 //Temperature in K
 int Temperature[111] = {1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000, 4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900, 5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500, 6600, 6700, 6800, 6900, 7000, 7100, 7200, 7300, 7400, 7500, 7600, 7700, 7800, 7900, 8000, 8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800, 8900, 9000, 9100, 9200, 9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000, 10100, 10200, 10300, 10400, 10500, 10600, 10700, 10800, 10900, 11000, 11100, 11200, 11300, 11400, 11500, 11600, 11700, 11800, 11900, 12000};
 //Correspodning Hexcolor
@@ -68,10 +71,7 @@ void setup() {
 
   //Firebase Declaration
   Firebase.begin(FIREBASE_DATABASE_URL, FIREBASE_KEY);
-
-  //If using Google actions, set stream to Deviceid
-  Firebase.stream("1");
-
+  Firebase.stream(STRMDEVID);
 }
 
 
@@ -93,7 +93,7 @@ void loop() {
 
     if (eventType == "patch" || eventType == "put") {
       if (path == "/Brightness") {
-        int bright = Firebase.getInt("/1/Brightness/brightness");
+        int bright = Firebase.getInt("/" + STRMDEVID + "/Brightness/brightness");
         strip.setBrightness(bright);
         strip.show();
         bri = bright;
@@ -103,7 +103,7 @@ void loop() {
         Serial.println(bri);
       }
       else if (path == "/OnOff") {
-        bool lightstatus = Firebase.getBool("/1/OnOff/on");
+        bool lightstatus = Firebase.getBool("/" + STRMDEVID + "/OnOff/on");
         if (lightstatus == 0) {
           strip.fill();
           strip.show();
@@ -117,11 +117,11 @@ void loop() {
         Serial.println(lightstatus);
       }
       else if (path == "/ColorSetting") {
-        String colorname = Firebase.getString("/1/ColorSetting/color/name");
+        String colorname = Firebase.getString("/" + STRMDEVID + "/1/ColorSetting/color/name");
         Serial.println(colorname);
         String colors = event.getJsonVariant("data");
         if (colors.indexOf("temperature") != -1) {
-          int colortemp = Firebase.getInt("/1/ColorSetting/color/temperature");
+          int colortemp = Firebase.getInt("/" + STRMDEVID + "/1/ColorSetting/color/temperature");
           for (int i = 1; i <= 111; i++) {
             if (colortemp == Temperature[i]) {
             int colorhex = Hexcolor[i];
@@ -136,7 +136,7 @@ void loop() {
           }
           Serial.println(clr);
         } else if (colors.indexOf("spectrumRGB") != -1) {
-          int colordec = Firebase.getInt("/1/ColorSetting/color/spectrumRGB");
+          int colordec = Firebase.getInt("/" + STRMDEVID + "/ColorSetting/color/spectrumRGB");
           clr = colordec;
           strip.fill(clr);
           strip.show();

@@ -38,6 +38,9 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 #define FIREBASE_DATABASE_URL "ENTER YOUR FIREBASE DATABASE URL HERE"
 #define FIREBASE_KEY "ENTER YOUR FIREBASE KEY HERE"
 
+//Set the ID to the device id used in the index.json file
+static const String STRMDEVID =  "2";
+
 //Variables for brightness and color
 int bri;
 
@@ -59,9 +62,7 @@ void setup() {
 
   //Firebase Declaration
   Firebase.begin(FIREBASE_DATABASE_URL, FIREBASE_KEY);
-
-  //If using Google actions, set stream to Deviceid
-  Firebase.stream("2");
+  Firebase.stream(STRMDEVID);
 }
 
 
@@ -81,7 +82,7 @@ void loop() {
     Serial.println(path);
     if (eventType == "patch" || eventType == "put") {
       if (path == "/Brightness") {
-        int bright = Firebase.getInt("/2/Brightness/brightness");
+        int bright = Firebase.getInt("/" + STRMDEVID + "/Brightness/brightness");
         strip.setBrightness(bright);
         strip.show();
         bri = bright;
@@ -91,7 +92,7 @@ void loop() {
         Serial.println(bri);
       }
       else if (path == "/OnOff") {
-        bool lightstatus = Firebase.getBool("/2/OnOff/on");
+        bool lightstatus = Firebase.getBool("/" + STRMDEVID + "/OnOff/on");
         if (lightstatus == 0) {
           strip.fill();
           strip.show();
