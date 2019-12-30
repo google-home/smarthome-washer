@@ -67,7 +67,7 @@ using a Firebase backend.
     3. Select the plus (+) icon in the bottom right corner.   
     4. You should see your test app with the [test] prefix and the display name you set.   
     5. Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
-26. Now preprogrammed devices will appear in the Google Home app.   
+26. Now pre-programmed devices will appear in the Google Home app.   
 
 ## Pre-programmed smart devices   
 
@@ -82,8 +82,8 @@ The codes in this project will create the following devices:
 
 1. The devices have been declared for SYNC    
 2. The QUERY for the corresponding devices    
-3. The EXECUTE for the correspodning devices    
-4. The REPORT STATE for the correspoding devices   
+3. The EXECUTE for the corresponding devices    
+4. The REPORT STATE for the corresponding devices   
 
 
 ## License
