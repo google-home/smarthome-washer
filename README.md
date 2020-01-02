@@ -5,6 +5,12 @@ using a Firebase backend.
 
 ## How to  
 
+Refer to the video below for step by step guidelines.    
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=e1C5WIfZ89s
+" target="_blank"><img src="http://img.youtube.com/vi/e1C5WIfZ89s/0.jpg"
+alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>   
+
 1. Go to the Actions on Google Developer Console.    
 2. Click New Project, enter a name for the project, and click CREATE PROJECT.     
 3. Select the Smart Home App.     
