@@ -4,6 +4,9 @@
   "engines": {
     "node": "8"
   },
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "actions-on-google": "^2.12.0",
     "cors": "^2.8.5",

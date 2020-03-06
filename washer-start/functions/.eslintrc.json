@@ -1,9 +1,12 @@
 {
   "parserOptions": {
-    "ecmaVersion": 7,
+    "ecmaVersion": 2017,
     "sourceType": "script"
   },
   "extends": ["google"],
+  "rules": {
+    "no-unused-vars": "warn"
+  },
   "env": {
     "node": true
   }

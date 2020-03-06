@@ -26,24 +26,24 @@ admin.initializeApp();
 const firebaseRef = admin.database().ref('/');
 // Initialize Homegraph
 const auth = new google.auth.GoogleAuth({
-  scopes: ['https://www.googleapis.com/auth/homegraph']
+  scopes: ['https://www.googleapis.com/auth/homegraph'],
 });
 const homegraph = google.homegraph({
   version: 'v1',
-  auth: auth
+  auth: auth,
 });
 
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
-    decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
-    request.query.state);
+      decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
+      request.query.state);
   console.log(responseurl);
   return response.redirect(responseurl);
 });
 
 exports.faketoken = functions.https.onRequest((request, response) => {
-  const grantType = request.query.grant_type
-    ? request.query.grant_type : request.body.grant_type;
+  const grantType = request.query.grant_type ?
+    request.query.grant_type : request.body.grant_type;
   const secondsInDay = 86400; // 60 * 60 * 24
   const HTTP_STATUS_OK = 200;
   console.log(`Grant type ${grantType}`);
@@ -64,7 +64,7 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     };
   }
   response.status(HTTP_STATUS_OK)
-    .json(obj);
+      .json(obj);
 });
 
 const app = smarthome({
@@ -112,7 +112,7 @@ const queryFirebase = async (deviceId) => {
     isPaused: snapshotVal.StartStop.isPaused,
     isRunning: snapshotVal.StartStop.isRunning,
   };
-}
+};
 const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
   return {
@@ -127,7 +127,7 @@ const queryDevice = async (deviceId) => {
     currentTotalRemainingTime: 1212,
     currentCycleRemainingTime: 301,
   };
-}
+};
 
 app.onQuery(async (body) => {
   const {requestId} = body;
@@ -139,23 +139,23 @@ app.onQuery(async (body) => {
   for (const device of intent.payload.devices) {
     const deviceId = device.id;
     queryPromises.push(queryDevice(deviceId)
-      .then((data) => {
+        .then((data) => {
         // Add response to device payload
-        payload.devices[deviceId] = data;
-      }
-    ));
+          payload.devices[deviceId] = data;
+        }
+        ));
   }
   // Wait for all promises to resolve
-  await Promise.all(queryPromises)
+  await Promise.all(queryPromises);
   return {
     requestId: requestId,
     payload: payload,
   };
 });
 
-const updateDevice = async (execution,deviceId) => {
-  const {params,command} = execution;
-  let state, ref;
+const updateDevice = async (execution, deviceId) => {
+  const {params, command} = execution;
+  let state; let ref;
   switch (command) {
     case 'action.devices.commands.OnOff':
       state = {on: params.on};
@@ -172,7 +172,7 @@ const updateDevice = async (execution,deviceId) => {
   }
 
   return ref.update(state)
-    .then(() => state);
+      .then(() => state);
 };
 
 app.onExecute(async (body) => {
@@ -192,18 +192,18 @@ app.onExecute(async (body) => {
     for (const device of command.devices) {
       for (const execution of command.execution) {
         executePromises.push(
-          updateDevice(execution,device.id)
-            .then((data) => {
-              result.ids.push(device.id);
-              Object.assign(result.states, data);
-            })
-            .catch(() => console.error(`Unable to update ${device.id}`))
+            updateDevice(execution, device.id)
+                .then((data) => {
+                  result.ids.push(device.id);
+                  Object.assign(result.states, data);
+                })
+                .catch(() => console.error(`Unable to update ${device.id}`))
         );
       }
     }
   }
 
-  await Promise.all(executePromises)
+  await Promise.all(executePromises);
   return {
     requestId: requestId,
     payload: {
@@ -221,14 +221,14 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
   try {
     const res = await homegraph.devices.requestSync({
       requestBody: {
-        agentUserId: '123'
-      }
+        agentUserId: '123',
+      },
     });
     console.info('Request sync response:', res.status, res.data);
     response.json(res.data);
   } catch (err) {
     console.error(err);
-    response.status(500).send(`Error requesting sync: ${err}`)
+    response.status(500).send(`Error requesting sync: ${err}`);
   }
 });
 
@@ -236,30 +236,31 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  * Send a REPORT STATE call to the homegraph when data for any device id
  * has been changed.
  */
-exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change, context) => {
-  console.info('Firebase write event triggered this cloud function');
-  const snapshot = change.after.val();
+exports.reportstate = functions.database.ref('{deviceId}').onWrite(
+    async (change, context) => {
+      console.info('Firebase write event triggered this cloud function');
+      const snapshot = change.after.val();
 
-  const requestBody = {
-    requestId: 'ff36a3cc', /* Any unique ID */
-    agentUserId: '123', /* Hardcoded user ID */
-    payload: {
-      devices: {
-        states: {
-          /* Report the current state of our washer */
-          [context.params.deviceId]: {
-            on: snapshot.OnOff.on,
-            isPaused: snapshot.StartStop.isPaused,
-            isRunning: snapshot.StartStop.isRunning,
+      const requestBody = {
+        requestId: 'ff36a3cc', /* Any unique ID */
+        agentUserId: '123', /* Hardcoded user ID */
+        payload: {
+          devices: {
+            states: {
+              /* Report the current state of our washer */
+              [context.params.deviceId]: {
+                on: snapshot.OnOff.on,
+                isPaused: snapshot.StartStop.isPaused,
+                isRunning: snapshot.StartStop.isRunning,
+              },
+            },
           },
         },
-      },
-    },
-  };
+      };
 
-  const res = await homegraph.devices.reportStateAndNotification({
-    requestBody
-  });
-  console.info('Report state response:', res.status, res.data);
-});
+      const res = await homegraph.devices.reportStateAndNotification({
+        requestBody,
+      });
+      console.info('Report state response:', res.status, res.data);
+    });
 

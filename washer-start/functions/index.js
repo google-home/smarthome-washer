@@ -26,24 +26,24 @@ admin.initializeApp();
 const firebaseRef = admin.database().ref('/');
 // Initialize Homegraph
 const auth = new google.auth.GoogleAuth({
-  scopes: ['https://www.googleapis.com/auth/homegraph']
+  scopes: ['https://www.googleapis.com/auth/homegraph'],
 });
 const homegraph = google.homegraph({
   version: 'v1',
-  auth: auth
+  auth: auth,
 });
 
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
-    decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
-    request.query.state);
+      decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
+      request.query.state);
   console.log(responseurl);
   return response.redirect(responseurl);
 });
 
 exports.faketoken = functions.https.onRequest((request, response) => {
-  const grantType = request.query.grant_type
-    ? request.query.grant_type : request.body.grant_type;
+  const grantType = request.query.grant_type ?
+    request.query.grant_type : request.body.grant_type;
   const secondsInDay = 86400; // 60 * 60 * 24
   const HTTP_STATUS_OK = 200;
   console.log(`Grant type ${grantType}`);
@@ -64,7 +64,7 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     };
   }
   response.status(HTTP_STATUS_OK)
-    .json(obj);
+      .json(obj);
 });
 
 const app = smarthome({
@@ -79,14 +79,14 @@ app.onSync((body) => {
 const queryFirebase = async (deviceId) => {
   const snapshot = await firebaseRef.child(deviceId).once('value');
   const snapshotVal = snapshot.val();
-  //TODO: Define device states to return
+  // TODO: Define device states to return
   return {};
 };
 
 // eslint-disable-next-line
 const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
-  //TODO: Define device states to return
+  // TODO: Define device states to return
   return {};
 };
 
@@ -95,7 +95,7 @@ app.onQuery((body) => {
   return {};
 });
 
-const updateDevice = async (execution,deviceId) => {
+const updateDevice = async (execution, deviceId) => {
   // TODO: Add commands to change device states
 };
 
@@ -118,9 +118,10 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  * Send a REPORT STATE call to the homegraph when data for any device id
  * has been changed.
  */
-exports.reportstate = functions.database.ref('{deviceId}').onWrite((change, context) => {
-  console.info('Firebase write event triggered this cloud function');
+exports.reportstate = functions.database.ref('{deviceId}').onWrite(
+    async (change, context) => {
+      console.info('Firebase write event triggered this cloud function');
 
-  // TODO: Get latest state and call HomeGraph API
-});
+      // TODO: Get latest state and call HomeGraph API
+    });
 
