@@ -212,6 +212,11 @@ app.onExecute(async (body) => {
   };
 });
 
+app.onDisconnect((body, headers) => {
+  console.log('User account unlinked from Google Assistant');
+  // Return empty response
+  return {};
+});
 
 exports.smarthome = functions.https.onRequest(app);
 
