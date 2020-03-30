@@ -8,11 +8,6 @@
       "source": "/requestsync",
       "function": "requestsync"
     }],
-    "ignore": [
-      "firebase.json",
-      "database-rules.json",
-      "functions"
-    ],
     "headers": [{
       "source" : "**/*.@(js|html)",
       "headers" : [ {
