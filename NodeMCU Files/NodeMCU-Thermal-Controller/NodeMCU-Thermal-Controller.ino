@@ -67,13 +67,13 @@ void loop() {
   Serial.print("temperature set: ");
   Serial.println(temperature_set);
   delay(1000);
-  if (temperature_set == 20.00) {
+  if (temperature_set < 19.00) {
     digitalWrite(SWITCH_PIN, HIGH);
-    Serial.println("accendo");
+    Serial.println("turn on the relay");
   }
-  if (temperature_set == 18.00) {
+  if (temperature_set > 21.00) {
     digitalWrite(SWITCH_PIN, LOW);
-    Serial.println("spengo");
+    Serial.println("turn off the relay");
   }
 
   String set_mode = (Firebase.getString("/" + STRMDEVID + "/TemperatureSetting/thermostatMode"));
