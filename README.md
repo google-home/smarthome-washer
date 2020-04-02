@@ -91,7 +91,13 @@ The codes in this project will create the following devices:
 1. The devices have been declared for SYNC    
 2. The QUERY for the corresponding devices    
 3. The EXECUTE for the corresponding devices    
-4. The REPORT STATE for the corresponding devices   
+4. The REPORT STATE for the corresponding devices
+
+## Note
+
+1. Do not install the json version 6 library as it is not currently compatible.
+2. Install the library Arduinojson vers:5.13.0
+3. Install the library Firebase Arduino from here: https://github.com/FirebaseExtended/firebase-arduino.git
 
 
 ## License
