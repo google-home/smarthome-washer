@@ -62,10 +62,9 @@ void loop() {
     Firebase.setInt("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureAmbient", temperature);
     Firebase.setInt("/" + STRMDEVID + "/TemperatureSetting/thermostatHumidityAmbient", humidity);
 
-    //This will increase the temperature and humidity
-    temperature = temperature + 1;
-    humidity = humidity + 1;
-  
+    // Insert your code to send temperature reading to firebase here
+    
+    }
 
   //Check Firebase connection
   if (Firebase.failed()) {
@@ -102,4 +101,4 @@ void loop() {
       }
     }
   }
-}}
+}
