@@ -23,7 +23,6 @@
 static const String STRMDEVID =  "4";
 
 //Variables
-bool SensorUpdate;
 int temperature;
 int humidity;
 unsigned long previousMillis = 0;
