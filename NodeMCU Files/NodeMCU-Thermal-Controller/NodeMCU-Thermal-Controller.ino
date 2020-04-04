@@ -26,7 +26,8 @@ static const String STRMDEVID =  "4";
 int temperature;
 int humidity;
 unsigned long previousMillis = 0;
-const long interval = 10000; // time to refresh temp (10 seconds)
+const long interval = 10000; // interval to refresh temp from sensor (10 seconds)
+const long fbupdateinterval = 60000; // interval to update temperature in firebase (1 minute)
 
 void setup() {
 
@@ -42,13 +43,10 @@ void setup() {
   //Firebase Declaration
   Firebase.begin(FIREBASE_DATABASE_URL, FIREBASE_KEY);
   Firebase.stream(STRMDEVID);
+
+  //Create json segments in firebase to make the thermostat controllable
   Firebase.setFloat("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureSetpoint", 18);
   Firebase.setString("/" + STRMDEVID + "/TemperatureSetting/thermostatMode", "off");
-
-  //Change or remove it if you want
-  SensorUpdate = true;
-  temperature = 10;
-  humidity = 10;
 }
 
 void loop() {
@@ -58,13 +56,10 @@ void loop() {
     // save the last time you updated the temp values
     previousMillis = currentMillis;
 
-    Firebase.setInt("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureAmbient", temperature);
-    Firebase.setInt("/" + STRMDEVID + "/TemperatureSetting/thermostatHumidityAmbient", humidity);
+    // Insert your code to get temperature from sensor
 
-    // Insert your code to send temperature reading to firebase here
-    
-    }
-
+  }
+  
   //Check Firebase connection
   if (Firebase.failed()) {
     Serial.println("Streaming Error");
@@ -78,25 +73,31 @@ void loop() {
     String path = event.getString("path");
     Serial.println(path);
 
-    if (eventType == "patch" || eventType == "put" ) {
-      if (path == "/thermostatTemperatureSetpoint/", "") {
-        float temperature_set = Firebase.getFloat("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureSetpoint/");
-        Serial.print("temp set to: ");
-        Serial.print(temperature_set);
-        Serial.println(" C°");
+    unsigned long currentMilliss = millis();
+    if (currentMilliss - previousMillis >= fbupdateinterval) {
+      previousMillis = currentMilliss;
 
-        if (temperature_set < 19.00) {
-          digitalWrite(RELAY_PIN, HIGH);
+      if (eventType == "patch" || eventType == "put" ) {
+        if (path == "/thermostatTemperatureSetpoint/", "") {
+          float temperature_set = Firebase.getFloat("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureSetpoint/");
+          Serial.print("temp set to: ");
+          Serial.print(temperature_set);
+          Serial.println(" C°");
+          
+          //example:
+          if (temperature_set < 19.00) {
+            digitalWrite(RELAY_PIN, HIGH);
+          }
+          if (temperature_set > 20.00) {
+            digitalWrite(RELAY_PIN, LOW);
+          }
         }
-        if (temperature_set > 20.00) {
-          digitalWrite(RELAY_PIN, LOW);
-        }
-      }
 
-      if (path == "/thermostatMode/", "") {
-        String set_mode = (Firebase.getString("/" + STRMDEVID + "/TemperatureSetting/thermostatMode"));
-        Serial.print("termostat mode: ");
-        Serial.println(set_mode);
+        if (path == "/thermostatMode/", "") {
+          String set_mode = (Firebase.getString("/" + STRMDEVID + "/TemperatureSetting/thermostatMode"));
+          Serial.print("termostat mode: ");
+          Serial.println(set_mode);
+        }
       }
     }
   }
