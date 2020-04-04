@@ -44,10 +44,6 @@ void setup() {
   //Firebase Declaration
   Firebase.begin(FIREBASE_DATABASE_URL, FIREBASE_KEY);
   Firebase.stream(STRMDEVID);
-
-  //Create json segments in firebase to make the thermostat controllable
-  Firebase.setFloat("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureSetpoint", 18);
-  Firebase.setString("/" + STRMDEVID + "/TemperatureSetting/thermostatMode", "off");
 }
 
 void loop() {
