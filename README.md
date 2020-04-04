@@ -67,7 +67,9 @@ alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>
     Authorization URL       : https://us-central1-<project-id>.cloudfunctions.net/fakeauth  
     Token URL               : https://us-central1-<project-id>.cloudfunctions.net/faketoken   
     ```
-24. Download the project-id.export.json file from git and rename the project-id file with your project id leaving the export.json part.  25. Open the firebase consol, select your project, click on relatimeFirebase, click on settings, import json file renamed with your id.
+24. Download the project-id.export.json file from git and rename the project-id file
+with your project id leaving the export.json part.  
+25. Open the firebase consol, select your project, click on relatimeFirebase, click on settings, import json file renamed with your id.
 26. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
 27. To link to Google Assistant:  
     1. On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
