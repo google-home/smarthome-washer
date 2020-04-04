@@ -28,6 +28,7 @@ int humidity;
 unsigned long previousMillis = 0;
 const long interval = 10000; // interval to refresh temp from sensor (10 seconds)
 const long fbupdateinterval = 60000; // interval to update temperature in firebase (1 minute)
+unsigned Millis = 0;
 
 void setup() {
 
@@ -73,11 +74,11 @@ void loop() {
     String path = event.getString("path");
     Serial.println(path);
 
-    unsigned long currentMilliss = millis();
-    if (currentMilliss - previousMillis >= fbupdateinterval) {
-      previousMillis = currentMilliss;
-
-      if (eventType == "patch" || eventType == "put" ) {
+   if (eventType == "patch" || eventType == "put" ) {
+     unsigned long currentMilliss = millis();
+    if (currentMilliss - Millis >= fbupdateinterval) {
+      Millis = currentMilliss;
+      
         if (path == "/thermostatTemperatureSetpoint/", "") {
           float temperature_set = Firebase.getFloat("/" + STRMDEVID + "/TemperatureSetting/thermostatTemperatureSetpoint/");
           Serial.print("temp set to: ");
