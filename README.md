@@ -67,14 +67,15 @@ alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>
     Authorization URL       : https://us-central1-<project-id>.cloudfunctions.net/fakeauth  
     Token URL               : https://us-central1-<project-id>.cloudfunctions.net/faketoken   
     ```
-24. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
-25. To link to Google Assistant:  
+24. Download the project-id.export.json file from git and rename the project-id file with your project id leaving the export.json part.  25. Open the firebase consol, select your project, click on relatimeFirebase, click on settings, import json file renamed with your id.
+26. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
+27. To link to Google Assistant:  
     1. On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
     2. Navigate to Google Assistant > Settings > Home Control (under Assistant).   
     3. Select the plus (+) icon in the bottom right corner.   
     4. You should see your test app with the [test] prefix and the display name you set.   
     5. Select that item. The Google Assistant will then authenticate with your service and send a SYNC request, asking your service to provide a list of devices for the user.   
-26. Now pre-programmed devices will appear in the Google Home app.   
+28. Now pre-programmed devices will appear in the Google Home app.   
 
 ## Pre-programmed smart devices   
 
