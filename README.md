@@ -45,31 +45,32 @@ alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>
 15. Select Create Credentials and create a Service account key.   
 16. Create a new Service account.   
 17. Use the role Service Account > Service Account Token Creator.    
-18. Create the account and download a JSON file. Save this in the functions folder as smart-home-key.json   
-19. Connect to firebase using:   
+18. Create the account and download a JSON file. Save this in the functions folder as smart-home-key.json
+19. Download the project-id.export.json file from git and rename the project-id file
+with your project id leaving the export.json part.  
+20. Open the firebase consol, select your project, click on relatimeFirebase, click on settings, import json file renamed with your id.
+
+21. Connect to firebase using:   
     ```   
     firebase use <project-id>   
     ```   
-20. Deploy firebase using:   
+22. Deploy firebase using:   
     ```   
     sudo npm install   
     firebase deploy   
     ```   
-21. In the Actions console under Overview > Build your Action, select Add Action(s). Enter the URL for your cloud function that provides fulfillment for  the smart home intents and click Save.   
+23. In the Actions console under Overview > Build your Action, select Add Action(s). Enter the URL for your cloud function that provides fulfillment for  the smart home intents and click Save.   
     ```   
     https://us-central1-<project-id>.cloudfunctions.net/smarthome   
     ```   
-22. On the Develop > Invocation tab, add a Display Name for your Action, and click Save. This name will appear in the Google Home app.   
-23. To enable Account linking, select the Develop > Account linking option in the left navigation. Use these account linking settings:   
+24. On the Develop > Invocation tab, add a Display Name for your Action, and click Save. This name will appear in the Google Home app.   
+25. To enable Account linking, select the Develop > Account linking option in the left navigation. Use these account linking settings:   
     ```   
     Client ID               : ABC123   
     Client secret           : DEF456
     Authorization URL       : https://us-central1-<project-id>.cloudfunctions.net/fakeauth  
     Token URL               : https://us-central1-<project-id>.cloudfunctions.net/faketoken   
     ```
-24. Download the project-id.export.json file from git and rename the project-id file
-with your project id leaving the export.json part.  
-25. Open the firebase consol, select your project, click on relatimeFirebase, click on settings, import json file renamed with your id.
 26. Click Save to save your account linking configuration, then click Test to enable testing on your project.   
 27. To link to Google Assistant:  
     1. On your phone, open the Google Assistant settings. Note that you should be logged in as the same account as in the console.   
