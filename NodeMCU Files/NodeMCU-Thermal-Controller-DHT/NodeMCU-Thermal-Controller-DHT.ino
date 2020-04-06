@@ -3,7 +3,7 @@
 //*************************https://github.com/shivasiddharth*******************************
 //*************************Do not modify or remove this part*******************************
 //************If you are modifying or re-using the code, credit the the author*************
-//This sketch has been adapted from Aandroide
+//**********************This sketch has been adapted from Aandroide************************
 
 #include <FirebaseArduino.h>
 #include <ESP8266WiFi.h>
