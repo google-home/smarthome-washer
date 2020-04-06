@@ -189,7 +189,7 @@ const devicesitems = [{
     availableThermostatModes: 'off,on,heat,cool,heatcool',
     queryOnlyTemperatureSetting: false,
     thermostatTemperatureUnit: 'C',
-    commandOnlyTemperatureSetting: false
+    commandOnlyTemperatureSetting: true
   },
 },
 {
