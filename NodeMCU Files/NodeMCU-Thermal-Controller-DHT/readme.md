@@ -1,8 +1,6 @@
-# 
-Voice commands to control the thermostat  
+## Initialize devices by voice at first use, for example:    
 
-1. OK Google "set hot air".
-2. Ok Google "set cold air".
-3. Ok Google "turn on the thermostat".
-4. Ok Google "turn off the thermostat". 
-5. Ok Google "set the temperature to 20 C°".   
+1. OK Google, "Set thermostat to heat mode".  
+2. Ok Google, "Set thermostat to 10 degrees".   
+3. Ok Google, "Set lights to Green color".  
+4. Ok Google, "Set light to 20% Brightness".   
