@@ -93,6 +93,13 @@ The codes in this project will create the following devices:
 3. The EXECUTE for the corresponding devices    
 4. The REPORT STATE for the corresponding devices 
 
+## Initialize devices by voice at first use, for example:    
+
+1. OK Google, "Set thermostat to heat mode".  
+2. Ok Google, "Set thermostat to 10 degrees".   
+3. Ok Google, "Set lights to Green color".  
+4. Ok Google, "Set light to 20% Brightness".   
+
 ## Note
 
 1. Do not install the json version 6 library as it is not currently compatible.
