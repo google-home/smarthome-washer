@@ -71,7 +71,7 @@ const app = smarthome({
   debug: true,
 })
 
-const devicesitems = [{
+const deviceitems = [{
   id: '1',
   type: 'action.devices.types.LIGHT',
   traits: [
@@ -238,12 +238,32 @@ const devicesitems = [{
   },
 }]
 
+var devicecounter;
+
 app.onSync((body) => {
+  for (devicecounter = 0; devicecounter < deviceitems.length; devicecounter++) {
+    if (deviceitems[devicecounter].traits.includes('action.devices.traits.TemperatureSetting')) {
+      if (deviceitems[devicecounter].attributes.queryOnlyTemperatureSetting == true) {
+        firebaseRef.child(deviceitems[devicecounter].id).child('TemperatureSetting').set({thermostatMode: "off", thermostatTemperatureAmbient: 20, thermostatHumidityAmbient: 90});
+      } else if (deviceitems[devicecounter].attributes.queryOnlyTemperatureSetting == false) {
+        firebaseRef.child(deviceitems[devicecounter].id).child('TemperatureSetting').set({thermostatMode: "off", thermostatTemperatureSetpoint: 25.5, thermostatTemperatureAmbient: 20, thermostatHumidityAmbient: 90, thermostatTemperatureSetpointLow: 15, thermostatTemperatureSetpointHigh: 30});
+      }
+    }
+    if (deviceitems[devicecounter].traits.includes('action.devices.traits.OnOff')) {
+      firebaseRef.child(deviceitems[devicecounter].id).child('OnOff').set({on: false});
+    }
+    if (deviceitems[devicecounter].traits.includes('action.devices.traits.Brightness')) {
+      firebaseRef.child(deviceitems[devicecounter].id).child('Brightness').set({brightness: 10});
+    }
+    if (deviceitems[devicecounter].traits.includes('action.devices.traits.ColorSetting')) {
+      firebaseRef.child(deviceitems[devicecounter].id).child('ColorSetting').set({color: {name: "deep sky blue", spectrumRGB: 49151}});
+    }
+  }
   return {
     requestId: body.requestId,
     payload: {
       agentUserId: '123',
-      devices: devicesitems
+      devices: deviceitems
     },
   };
 });
