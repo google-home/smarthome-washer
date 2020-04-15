@@ -88,10 +88,7 @@ The codes in this project will create the following devices:
 
 ## Adding or modifying the devices     
 
-1. The devices have been declared for SYNC    
-2. The QUERY for the corresponding devices    
-3. The EXECUTE for the corresponding devices    
-4. The REPORT STATE for the corresponding devices
+The devices can be added or modified from the **devices.json** within the functions folder.  Use https://jsonlint.com to validate your device list in the JSON file.      
 
 ## Initialize devices by voice at first use, for example:    
 

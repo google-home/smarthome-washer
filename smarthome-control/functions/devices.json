@@ -1,0 +1,207 @@
+﻿[
+  {
+    "id": "1",
+    "type": "action.devices.types.LIGHT",
+    "traits": [
+      "action.devices.traits.OnOff",
+      "action.devices.traits.Brightness",
+      "action.devices.traits.ColorSetting"
+    ],
+    "name": {
+      "defaultNames": [
+        "My Test Light1"
+      ],
+      "name": "Light 1",
+      "nicknames": [
+        "Patio Light"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys RGB Bulb",
+      "hwVersion": "1.0",
+      "swVersion": "1.0.1"
+    },
+    "willReportState": true,
+    "attributes": {
+      "commandOnlyOnOff": false,
+      "commandOnlyColorSetting": false,
+      "commandOnlyBrightness": false,
+      "colorModel": "rgb",
+      "colorTemperatureRange": {
+        "temperatureMinK": 2000,
+        "temperatureMaxK": 6500
+      }
+    }
+  },
+  {
+    "id": "2",
+    "type": "action.devices.types.LIGHT",
+    "traits": [
+      "action.devices.traits.OnOff",
+      "action.devices.traits.Brightness"
+    ],
+    "name": {
+      "defaultNames": [
+        "My Test Light2"
+      ],
+      "name": "Light 2",
+      "nicknames": [
+        "Corridor Light"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys LED Bulb",
+      "hwVersion": "2.0",
+      "swVersion": "2.0.1"
+    },
+    "willReportState": true,
+    "attributes": {
+      "commandOnlyOnOff": false,
+      "commandOnlyBrightness": false
+    }
+  },
+  {
+    "id": "3",
+    "type": "action.devices.types.FAN",
+    "traits": [
+      "action.devices.traits.OnOff",
+      "action.devices.traits.Toggles"
+    ],
+    "name": {
+      "defaultNames": [
+        "My Fan"
+      ],
+      "name": "Fan1",
+      "nicknames": [
+        "Ceiling Fan"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys High Effeciency Fan",
+      "hwVersion": "3.0",
+      "swVersion": "4.0.1"
+    },
+    "willReportState": true,
+    "attributes": {
+      "commandOnlyOnOff": false,
+      "commandOnlyFanSpeed": false,
+      "availableFanSpeeds": [
+        {
+          "speeds": [
+            {
+              "speed_name": "S1",
+              "speed_values": [
+                {
+                  "speed_synonym": [
+                    "low",
+                    "speed 1"
+                  ],
+                  "lang": "en"
+                }
+              ]
+            },
+            {
+              "speed_name": "S2",
+              "speed_values": [
+                {
+                  "speed_synonym": [
+                    "high",
+                    "speed 2"
+                  ],
+                  "lang": "en"
+                }
+              ]
+            }
+          ],
+          "ordered": true
+        }
+      ],
+      "reversible": true
+    }
+  },
+  {
+    "id": "4",
+    "type": "action.devices.types.THERMOSTAT",
+    "traits": [
+      "action.devices.traits.TemperatureSetting"
+    ],
+    "name": {
+      "defaultNames": [
+        "Temp Control"
+      ],
+      "name": "Temperature Controller ",
+      "nicknames": [
+        "Thermal Controller"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys Thermostat",
+      "hwVersion": "4.0",
+      "swVersion": "5.0.1"
+    },
+    "willReportState": true,
+    "attributes": {
+      "availableThermostatModes": "off,on,heat,cool,heatcool",
+      "queryOnlyTemperatureSetting": false,
+      "thermostatTemperatureUnit": "C",
+      "commandOnlyTemperatureSetting": false
+    }
+  },
+  {
+    "id": "5",
+    "type": "action.devices.types.THERMOSTAT",
+    "traits": [
+      "action.devices.traits.TemperatureSetting"
+    ],
+    "name": {
+      "defaultNames": [
+        "Temp Sensor"
+      ],
+      "name": "Room Temperature Sensor",
+      "nicknames": [
+        "Ambient Temperature Sensor"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys Temperature Sensor",
+      "hwVersion": "5.0",
+      "swVersion": "6.0.1"
+    },
+    "willReportState": true,
+    "attributes": {
+      "queryOnlyTemperatureSetting": true,
+      "thermostatTemperatureUnit": "C"
+    }
+  },
+  {
+    "id": "6",
+    "type": "action.devices.types.SWITCH",
+    "traits": [
+      "action.devices.traits.OnOff"
+    ],
+    "name": {
+      "defaultNames": [
+        "Plug Socket"
+      ],
+      "name": "Smart Switch",
+      "nicknames": [
+        "New Switch"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys On/Off Switch",
+      "hwVersion": "6.0",
+      "swVersion": "7.0.1"
+    },
+    "willReportState": true,
+    "attributes": {
+      "commandOnlyOnOff": false
+    }
+  }
+]
