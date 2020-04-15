@@ -11,7 +11,7 @@ Refer to the video below for step by step guidelines.
 " target="_blank"><img src="http://img.youtube.com/vi/e1C5WIfZ89s/0.jpg"
 alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>   
 
-   
+
 1. Go to the Actions on Google Developer Console.    
 2. Click New Project, enter a name for the project, and click CREATE PROJECT.     
 3. Select the Smart Home App.     
@@ -91,7 +91,7 @@ The codes in this project will create the following devices:
 1. The devices have been declared for SYNC    
 2. The QUERY for the corresponding devices    
 3. The EXECUTE for the corresponding devices    
-4. The REPORT STATE for the corresponding devices 
+4. The REPORT STATE for the corresponding devices
 
 ## Initialize devices by voice at first use, for example:    
 
@@ -104,8 +104,9 @@ The codes in this project will create the following devices:
 
 1. Do not install the json version 6 library as it is not currently compatible.
 2. Install the library Arduinojson vers:5.13.0
-3. Install the library Firebase Arduino from here: https://github.com/FirebaseExtended/firebase-arduino.git
-  
+3. Install the library Firebase Arduino from here: https://github.com/FirebaseExtended/firebase-arduino.git   
+4. Default **agentUserId**  is set to **123**. Please change it to something unique to make use of Homegraph based reporting.    
+
 
 
 ## License

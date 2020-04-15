@@ -272,80 +272,82 @@ app.onSync((body) => {
 const queryFirebase = async (deviceId) => {
   const snapshot = await firebaseRef.child(deviceId).once('value');
   const snapshotVal = snapshot.val();
-  if (deviceId == '1') {
-    return {
-      on: snapshotVal.OnOff.on,
-      brightness: snapshotVal.Brightness.brightness,
-      color: snapshotVal.ColorSetting.color
-    };
-  } else if (deviceId == '2') {
-    return {
-      on: snapshotVal.OnOff.on,
-      brightness: snapshotVal.Brightness.brightness
-    };
-  } else if (deviceId == '3') {
-    return {
-      on: snapshotVal.OnOff.on,
-      //currentFanSpeedSetting: snapshotVal.FanSpeed.currentFanSpeedSetting
-    };
-  } else if (deviceId == '4') {
-    return {
-      thermostatMode: snapshotVal.TemperatureSetting.thermostatMode,
-      thermostatTemperatureSetpoint: snapshotVal.TemperatureSetting.thermostatTemperatureSetpoint,
-      thermostatTemperatureAmbient: snapshotVal.TemperatureSetting.thermostatTemperatureAmbient,
-      thermostatHumidityAmbient: snapshotVal.TemperatureSetting.thermostatHumidityAmbient,
-      thermostatTemperatureSetpointLow: snapshotVal.TemperatureSetting.thermostatTemperatureSetpointLow,
-      thermostatTemperatureSetpointHigh: snapshotVal.TemperatureSetting.thermostatTemperatureSetpointHigh
-    };
-  } else if (deviceId == '5') {
-    return {
-      thermostatTemperatureAmbient: snapshotVal.TemperatureSetting.thermostatTemperatureAmbient,
-      thermostatHumidityAmbient: snapshotVal.TemperatureSetting.thermostatHumidityAmbient
-    };
-  } else if (deviceId == '6') {
-    return {
-      on: snapshotVal.OnOff.on
-    };
+
+  var asyncvalue = {};
+
+  if (Object.prototype.hasOwnProperty.call(snapshotVal, 'OnOff')) {
+    asyncvalue = Object.assign(asyncvalue, {on: snapshotVal.OnOff.on});
   }
+  if (Object.prototype.hasOwnProperty.call(snapshotVal, 'Brightness')) {
+    asyncvalue = Object.assign(asyncvalue, {brightness: snapshotVal.Brightness.brightness});
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshotVal, 'ColorSetting')) {
+    asyncvalue = Object.assign(asyncvalue, {color: snapshotVal.ColorSetting.color});
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshotVal, 'FanSpeed')) {
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.FanSpeed, 'currentFanSpeedSetting')) {
+      asyncvalue = Object.assign(asyncvalue, {currentFanSpeedSetting: snapshotVal.FanSpeed.currentFanSpeedSetting});
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshotVal, 'TemperatureSetting')) {
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.TemperatureSetting, 'thermostatMode')) {
+      asyncvalue = Object.assign(asyncvalue, {thermostatMode: snapshotVal.TemperatureSetting.thermostatMode});
+    }
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.TemperatureSetting, 'thermostatTemperatureSetpoint')) {
+      asyncvalue = Object.assign(asyncvalue, {thermostatTemperatureSetpoint: snapshotVal.TemperatureSetting.thermostatTemperatureSetpoint});
+    }
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.TemperatureSetting, 'thermostatTemperatureAmbient')) {
+      asyncvalue = Object.assign(asyncvalue, {thermostatTemperatureAmbient: snapshotVal.TemperatureSetting.thermostatTemperatureAmbient});
+    }
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.TemperatureSetting, 'thermostatHumidityAmbient')) {
+      asyncvalue = Object.assign(asyncvalue, {thermostatHumidityAmbient: snapshotVal.TemperatureSetting.thermostatHumidityAmbient});
+    }
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.TemperatureSetting, 'thermostatTemperatureSetpointLow')) {
+      asyncvalue = Object.assign(asyncvalue, {thermostatTemperatureSetpointLow: snapshotVal.TemperatureSetting.thermostatTemperatureSetpointLow});
+    }
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.TemperatureSetting, 'thermostatTemperatureSetpointHigh')) {
+      asyncvalue = Object.assign(asyncvalue, {thermostatTemperatureSetpointHigh: snapshotVal.TemperatureSetting.thermostatTemperatureSetpointHigh});
+    }
+  }
+  return asyncvalue;
 }
 
 const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
-  if (deviceId == '1') {
-    return {
-      on: data.on,
-      brightness: data.brightness,
-      color: data.color
-    };
-  } else if (deviceId == '2') {
-    return {
-      on: data.on,
-      brightness: data.brightness
-    };
-  } else if (deviceId == '3') {
-    return {
-      on: data.on,
-      //currentFanSpeedSetting: data.currentFanSpeedSetting
-    };
-  } else if (deviceId == '4') {
-    return {
-      thermostatMode: data.thermostatMode,
-      thermostatTemperatureSetpoint: data.thermostatTemperatureSetpoint,
-      thermostatTemperatureAmbient: data.thermostatTemperatureAmbient,
-      thermostatHumidityAmbient: data.thermostatHumidityAmbient,
-      thermostatTemperatureSetpointLow: data.thermostatTemperatureSetpointLow,
-      thermostatTemperatureSetpointHigh: data.thermostatTemperatureSetpointHigh
-    };
-  } else if (deviceId == '5') {
-    return {
-      thermostatTemperatureAmbient: data.thermostatTemperatureAmbient,
-      thermostatHumidityAmbient: data.thermostatHumidityAmbient
-    };
-  } else if (deviceId == '6') {
-    return {
-      on: data.on
-    };
+
+  var datavalue = {};
+
+  if (Object.prototype.hasOwnProperty.call(data, 'on')) {
+    datavalue = Object.assign(datavalue, {on: data.on});
   }
+  if (Object.prototype.hasOwnProperty.call(data, 'brightness')) {
+    datavalue = Object.assign(datavalue, {brightness: data.brightness});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'color')) {
+    datavalue = Object.assign(datavalue, {color: data.color});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'currentFanSpeedSetting')) {
+    datavalue = Object.assign(datavalue, {currentFanSpeedSetting: data.currentFanSpeedSetting});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'thermostatMode')) {
+    datavalue = Object.assign(datavalue, {thermostatMode: data.thermostatMode});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'thermostatTemperatureSetpoint')) {
+    datavalue = Object.assign(datavalue, {thermostatTemperatureSetpoint: data.thermostatTemperatureSetpoint});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'thermostatTemperatureAmbient')) {
+    datavalue = Object.assign(datavalue, {thermostatTemperatureAmbient: data.thermostatTemperatureAmbient});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'thermostatHumidityAmbient')) {
+    datavalue = Object.assign(datavalue, {thermostatHumidityAmbient: data.thermostatHumidityAmbient});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'thermostatTemperatureSetpointLow')) {
+    datavalue = Object.assign(datavalue, {thermostatTemperatureSetpointLow: data.thermostatTemperatureSetpointLow});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'thermostatTemperatureSetpointHigh')) {
+    datavalue = Object.assign(datavalue, {thermostatTemperatureSetpointHigh: data.thermostatTemperatureSetpointHigh});
+  }
+  return datavalue;
 }
 
 app.onQuery(async (body) => {
@@ -474,40 +476,42 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
     return;
   }
   const snapshot = change.after.val();
-  if (deviceId == '1') {
-    var load = {
-      on: snapshot.OnOff.on,
-      brightness: snapshot.Brightness.brightness,
-      color: snapshot.ColorSetting.color
-    };
-  } else if (deviceId == '2') {
-    var load = {
-      on: snapshot.OnOff.on,
-      brightness: snapshot.Brightness.brightness
-    };
-  } else if (deviceId == '3') {
-    var load = {
-      on: snapshot.OnOff.on,
-      //currentFanSpeedSetting: snapshot.FanSpeed.currentFanSpeedSetting
-    };
-  } else if (deviceId == '4') {
-    var load = {
-      thermostatMode: snapshot.thermostatMode,
-      thermostatTemperatureSetpoint: snapshot.thermostatTemperatureSetpoint,
-      thermostatTemperatureAmbient: snapshot.thermostatTemperatureAmbient,
-      thermostatHumidityAmbient: snapshot.thermostatHumidityAmbient,
-      thermostatTemperatureSetpointLow: snapshot.thermostatTemperatureSetpointLow,
-      thermostatTemperatureSetpointHigh: snapshot.thermostatTemperatureSetpointHigh
-    };
-  } else if (deviceId == '5') {
-    var load = {
-      thermostatTemperatureAmbient: snapshot.thermostatTemperatureAmbient,
-      thermostatHumidityAmbient: snapshot.thermostatHumidityAmbient
-    };
-  } else if (deviceID == '6') {
-    var load = {
-      on: snapshot.OnOff.on
-    };
+
+  var syncvalue = {};
+
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'OnOff')) {
+    syncvalue = Object.assign(syncvalue, {on: snapshot.OnOff.on});
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'Brightness')) {
+    syncvalue = Object.assign(syncvalue, {brightness: snapshot.Brightness.brightness});
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'ColorSetting')) {
+    syncvalue = Object.assign(syncvalue, {color: snapshot.ColorSetting.color});
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'FanSpeed')) {
+    if (Object.prototype.hasOwnProperty.call(snapshot.FanSpeed, 'currentFanSpeedSetting')) {
+      syncvalue = Object.assign(syncvalue, {currentFanSpeedSetting: snapshot.FanSpeed.currentFanSpeedSetting});
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'TemperatureSetting')) {
+    if (Object.prototype.hasOwnProperty.call(snapshot.TemperatureSetting, 'thermostatMode')) {
+      syncvalue = Object.assign(syncvalue, {thermostatMode: snapshot.TemperatureSetting.thermostatMode});
+    }
+    if ("thermostatTemperatureSetpoint" in snapshot) {
+      syncvalue = Object.assign(syncvalue, {thermostatTemperatureSetpoint: snapshot.TemperatureSetting.thermostatTemperatureSetpoint});
+    }
+    if ("thermostatTemperatureAmbient" in snapshot) {
+      syncvalue = Object.assign(syncvalue, {thermostatTemperatureAmbient: snapshot.TemperatureSetting.thermostatTemperatureAmbient});
+    }
+    if ('thermostatHumidityAmbient' in snapshot) {
+      syncvalue = Object.assign(syncvalue, {thermostatHumidityAmbient: snapshot.TemperatureSetting.thermostatHumidityAmbient});
+    }
+    if ('thermostatTemperatureSetpointLow' in snapshot) {
+      syncvalue = Object.assign(syncvalue, {thermostatTemperatureSetpointLow: snapshot.TemperatureSetting.thermostatTemperatureSetpointLow});
+    }
+    if ('thermostatTemperatureSetpointHigh' in snapshot) {
+      syncvalue = Object.assign(syncvalue, {thermostatTemperatureSetpointHigh: snapshot.TemperatureSetting.thermostatTemperatureSetpointHigh});
+    }
   }
 
   const postData = {
@@ -517,9 +521,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
       devices: {
         states: {
           /* Report the current state of our light */
-          [context.params.deviceId]: {
-            load,
-          },
+          [context.params.deviceId]: syncvalue,
         },
       },
     },
