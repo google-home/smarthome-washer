@@ -33,12 +33,38 @@ const homegraph = google.homegraph({
   auth: auth,
 });
 
+exports.login = functions.https.onRequest((request, response) => {
+  if (request.method === 'GET') {
+    console.log('Requesting login page');
+    response.send(`
+    <html>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <body>
+        <form action="/login" method="post">
+          <input type="hidden" name="responseurl" value="${request.query.responseurl}" />
+          <button type="submit" style="font-size:14pt">Link this service to Google</button>
+        </form>
+      </body>
+    </html>
+  `);
+  } else if (request.method === 'POST') {
+    // Here, you should validate the user account.
+    // In this sample, we do not do that.
+    const responseurl = decodeURIComponent(request.body.responseurl);
+    console.log(`Redirect to ${responseurl}`);
+    return response.redirect(responseurl);
+  } else {
+    // Unsupported method
+    response.send(405, 'Method Not Allowed');
+  }
+});
+
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
       decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
       request.query.state);
-  console.log(responseurl);
-  return response.redirect(responseurl);
+  console.log(`Set redirect as ${responseurl}`)
+  return response.redirect(`/login?responseurl=${encodeURIComponent(responseurl)}`);
 });
 
 exports.faketoken = functions.https.onRequest((request, response) => {
