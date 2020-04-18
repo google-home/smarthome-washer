@@ -90,13 +90,6 @@ The codes in this project will create the following devices:
 
 The devices can be added or modified from the **devices.json** within the functions folder.  Use https://jsonlint.com to validate your device list in the JSON file.      
 
-## Initialize devices by voice at first use, for example:    
-
-1. OK Google, "Set thermostat to heat mode".  
-2. Ok Google, "Set thermostat to 10 degrees".   
-3. Ok Google, "Set lights to Green color".  
-4. Ok Google, "Set light to 20% Brightness".   
-
 ## Note
 
 1. Do not install the json version 6 library as it is not currently compatible.
