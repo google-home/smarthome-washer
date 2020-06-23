@@ -41,8 +41,11 @@ exports.login = functions.https.onRequest((request, response) => {
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <body>
         <form action="/login" method="post">
-          <input type="hidden" name="responseurl" value="${request.query.responseurl}" />
-          <button type="submit" style="font-size:14pt">Link this service to Google</button>
+          <input type="hidden"
+            name="responseurl" value="${request.query.responseurl}" />
+          <button type="submit" style="font-size:14pt">
+            Link this service to Google
+          </button>
         </form>
       </body>
     </html>
@@ -63,8 +66,9 @@ exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
       decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
       request.query.state);
-  console.log(`Set redirect as ${responseurl}`)
-  return response.redirect(`/login?responseurl=${encodeURIComponent(responseurl)}`);
+  console.log(`Set redirect as ${responseurl}`);
+  return response.redirect(
+      `/login?responseurl=${encodeURIComponent(responseurl)}`);
 });
 
 exports.faketoken = functions.https.onRequest((request, response) => {
