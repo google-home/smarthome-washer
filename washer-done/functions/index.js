@@ -32,10 +32,12 @@ const homegraph = google.homegraph({
   version: 'v1',
   auth: auth,
 });
+// Hardcoded user ID
+const USER_ID = '123';
 
 exports.login = functions.https.onRequest((request, response) => {
   if (request.method === 'GET') {
-    console.log('Requesting login page');
+    functions.logger.log('Requesting login page');
     response.send(`
     <html>
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,7 +56,7 @@ exports.login = functions.https.onRequest((request, response) => {
     // Here, you should validate the user account.
     // In this sample, we do not do that.
     const responseurl = decodeURIComponent(request.body.responseurl);
-    console.log(`Redirect to ${responseurl}`);
+    functions.logger.log(`Redirect to ${responseurl}`);
     return response.redirect(responseurl);
   } else {
     // Unsupported method
@@ -66,7 +68,7 @@ exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
       decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
       request.query.state);
-  console.log(`Set redirect as ${responseurl}`);
+  functions.logger.log(`Set redirect as ${responseurl}`);
   return response.redirect(
       `/login?responseurl=${encodeURIComponent(responseurl)}`);
 });
@@ -76,7 +78,7 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     request.query.grant_type : request.body.grant_type;
   const secondsInDay = 86400; // 60 * 60 * 24
   const HTTP_STATUS_OK = 200;
-  console.log(`Grant type ${grantType}`);
+  functions.logger.log(`Grant type ${grantType}`);
 
   let obj;
   if (grantType === 'authorization_code') {
@@ -97,15 +99,13 @@ exports.faketoken = functions.https.onRequest((request, response) => {
       .json(obj);
 });
 
-const app = smarthome({
-  debug: true,
-});
+const app = smarthome();
 
 app.onSync((body) => {
   return {
     requestId: body.requestId,
     payload: {
-      agentUserId: '123',
+      agentUserId: USER_ID,
       devices: [{
         id: 'washer',
         type: 'action.devices.types.WASHER',
@@ -227,7 +227,7 @@ app.onExecute(async (body) => {
                   result.ids.push(device.id);
                   Object.assign(result.states, data);
                 })
-                .catch(() => console.error(`Unable to update ${device.id}`)) );
+                .catch(() => functions.logger.error('EXECUTE', device.id)));
       }
     }
   }
@@ -242,7 +242,7 @@ app.onExecute(async (body) => {
 });
 
 app.onDisconnect((body, headers) => {
-  console.log('User account unlinked from Google Assistant');
+  functions.logger.log('User account unlinked from Google Assistant');
   // Return empty response
   return {};
 });
@@ -251,17 +251,17 @@ exports.smarthome = functions.https.onRequest(app);
 
 exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
-  console.info('Request SYNC for user 123');
+  functions.logger.info(`Request SYNC for user ${USER_ID}`);
   try {
     const res = await homegraph.devices.requestSync({
       requestBody: {
-        agentUserId: '123',
+        agentUserId: USER_ID,
       },
     });
-    console.info('Request sync response:', res.status, res.data);
+    functions.logger.info('Request sync response:', res.status, res.data);
     response.json(res.data);
   } catch (err) {
-    console.error(err);
+    functions.logger.error(err);
     response.status(500).send(`Error requesting sync: ${err}`);
   }
 });
@@ -272,12 +272,12 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite(
     async (change, context) => {
-      console.info('Firebase write event triggered this cloud function');
+      functions.logger.info('Firebase write event triggered Report State');
       const snapshot = change.after.val();
 
       const requestBody = {
         requestId: 'ff36a3cc', /* Any unique ID */
-        agentUserId: '123', /* Hardcoded user ID */
+        agentUserId: USER_ID,
         payload: {
           devices: {
             states: {
@@ -295,6 +295,6 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(
       const res = await homegraph.devices.reportStateAndNotification({
         requestBody,
       });
-      console.info('Report state response:', res.status, res.data);
+      functions.logger.info('Report state response:', res.status, res.data);
     });
 

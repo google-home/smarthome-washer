@@ -32,10 +32,12 @@ const homegraph = google.homegraph({
   version: 'v1',
   auth: auth,
 });
+// Hardcoded user ID
+const USER_ID = '123';
 
 exports.login = functions.https.onRequest((request, response) => {
   if (request.method === 'GET') {
-    console.log('Requesting login page');
+    functions.logger.log('Requesting login page');
     response.send(`
     <html>
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,7 +56,7 @@ exports.login = functions.https.onRequest((request, response) => {
     // Here, you should validate the user account.
     // In this sample, we do not do that.
     const responseurl = decodeURIComponent(request.body.responseurl);
-    console.log(`Redirect to ${responseurl}`);
+    functions.logger.log(`Redirect to ${responseurl}`);
     return response.redirect(responseurl);
   } else {
     // Unsupported method
@@ -66,7 +68,7 @@ exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
       decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
       request.query.state);
-  console.log(`Set redirect as ${responseurl}`);
+  functions.logger.log(`Set redirect as ${responseurl}`);
   return response.redirect(
       `/login?responseurl=${encodeURIComponent(responseurl)}`);
 });
@@ -76,7 +78,7 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     request.query.grant_type : request.body.grant_type;
   const secondsInDay = 86400; // 60 * 60 * 24
   const HTTP_STATUS_OK = 200;
-  console.log(`Grant type ${grantType}`);
+  functions.logger.log(`Grant type ${grantType}`);
 
   let obj;
   if (grantType === 'authorization_code') {
@@ -97,9 +99,7 @@ exports.faketoken = functions.https.onRequest((request, response) => {
       .json(obj);
 });
 
-const app = smarthome({
-  debug: true,
-});
+const app = smarthome();
 
 app.onSync((body) => {
   // TODO: Implement full SYNC response
@@ -135,7 +135,7 @@ app.onExecute((body) => {
 });
 
 app.onDisconnect((body, headers) => {
-  console.log('User account unlinked from Google Assistant');
+  functions.logger.log('User account unlinked from Google Assistant');
   // Return empty response
   return {};
 });
@@ -144,7 +144,7 @@ exports.smarthome = functions.https.onRequest(app);
 
 exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
-  console.info('Request SYNC for user 123');
+  functions.logger.info(`Request SYNC for user ${USER_ID}`);
 
   // TODO: Call HomeGraph API for user '123'
   response.status(500).send(`Request SYNC not implemented`);
@@ -156,7 +156,7 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite(
     async (change, context) => {
-      console.info('Firebase write event triggered this cloud function');
+      functions.logger.info('Firebase write event triggered Report State');
 
       // TODO: Get latest state and call HomeGraph API
     });
