@@ -78,6 +78,7 @@ const deviceitems = JSON.parse(JSON.stringify(devicelist));
 var devicecounter;
 
 app.onSync((body) => {
+  console.log('onSync');
   for (devicecounter = 0; devicecounter < deviceitems.length; devicecounter++) {
     if (deviceitems[devicecounter].traits.includes('action.devices.traits.TemperatureSetting')) {
       if (deviceitems[devicecounter].attributes.queryOnlyTemperatureSetting == true) {
@@ -94,6 +95,14 @@ app.onSync((body) => {
     }
     if (deviceitems[devicecounter].traits.includes('action.devices.traits.ColorSetting')) {
       firebaseRef.child(deviceitems[devicecounter].id).child('ColorSetting').set({color: {name: "deep sky blue", spectrumRGB: 49151}});
+    }
+    if (deviceitems[devicecounter].traits.includes('action.devices.traits.Modes')) {
+      var modename = deviceitems[devicecounter].attributes.availableModes[0].name
+      var modevalue = deviceitems[devicecounter].attributes.availableModes[0].settings[0].setting_name
+      firebaseRef.child(deviceitems[devicecounter].id).child('Modes').set({currentModeSettings: {modename: modevalue}});
+    }
+    if (deviceitems[devicecounter].traits.includes('action.devices.traits.FanSpeed')) {
+      firebaseRef.child(deviceitems[devicecounter].id).child('FanSpeed').set({currentFanSpeedSetting: 20.0});
     }
   }
   return {
@@ -124,6 +133,11 @@ const queryFirebase = async (deviceId) => {
   if (Object.prototype.hasOwnProperty.call(snapshotVal, 'FanSpeed')) {
     if (Object.prototype.hasOwnProperty.call(snapshotVal.FanSpeed, 'currentFanSpeedSetting')) {
       asyncvalue = Object.assign(asyncvalue, {currentFanSpeedSetting: snapshotVal.FanSpeed.currentFanSpeedSetting});
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshotVal, 'Modes')) {
+    if (Object.prototype.hasOwnProperty.call(snapshotVal.Modes, 'currentModeSettings')) {
+      asyncvalue = Object.assign(asyncvalue, {currentModeSettings: snapshotVal.Modes.currentModeSettings});
     }
   }
   if (Object.prototype.hasOwnProperty.call(snapshotVal, 'TemperatureSetting')) {
@@ -165,6 +179,9 @@ const queryDevice = async (deviceId) => {
   }
   if (Object.prototype.hasOwnProperty.call(data, 'currentFanSpeedSetting')) {
     datavalue = Object.assign(datavalue, {currentFanSpeedSetting: data.currentFanSpeedSetting});
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'currentModeSettings')) {
+    datavalue = Object.assign(datavalue, {currentModeSettings: data.currentModeSettings});
   }
   if (Object.prototype.hasOwnProperty.call(data, 'thermostatMode')) {
     datavalue = Object.assign(datavalue, {thermostatMode: data.thermostatMode});
@@ -231,6 +248,10 @@ const updateDevice = async (execution,deviceId) => {
     case 'action.devices.commands.SetFanSpeed':
       state = {currentFanSpeedSetting: params.fanSpeed};
       ref = firebaseRef.child(deviceId).child('FanSpeed');
+      break;
+    case 'action.devices.commands.SetModes':
+      state = {currentModeSettings: params.updateModeSettings};
+      ref = firebaseRef.child(deviceId).child('Modes');
       break;
     case 'action.devices.commands.ThermostatTemperatureSetpoint':
       state = {thermostatTemperatureSetpoint: params.thermostatTemperatureSetpoint};
@@ -328,6 +349,11 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
   if (Object.prototype.hasOwnProperty.call(snapshot, 'FanSpeed')) {
     if (Object.prototype.hasOwnProperty.call(snapshot.FanSpeed, 'currentFanSpeedSetting')) {
       syncvalue = Object.assign(syncvalue, {currentFanSpeedSetting: snapshot.FanSpeed.currentFanSpeedSetting});
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'Modes')) {
+    if (Object.prototype.hasOwnProperty.call(snapshot.Modes, 'currentModeSettings')) {
+      syncvalue = Object.assign(syncvalue, {currentModeSettings: snapshot.Modes.currentModeSettings});
     }
   }
   if (Object.prototype.hasOwnProperty.call(snapshot, 'TemperatureSetting')) {

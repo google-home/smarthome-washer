@@ -66,8 +66,8 @@
     "id": "3",
     "type": "action.devices.types.FAN",
     "traits": [
-      "action.devices.traits.OnOff",
-      "action.devices.traits.Toggles"
+      "action.devices.traits.FanSpeed",
+      "action.devices.traits.OnOff"
     ],
     "name": {
       "defaultNames": [
@@ -88,38 +88,13 @@
     "attributes": {
       "commandOnlyOnOff": false,
       "commandOnlyFanSpeed": false,
-      "availableFanSpeeds": [
-        {
-          "speeds": [
-            {
-              "speed_name": "S1",
-              "speed_values": [
-                {
-                  "speed_synonym": [
-                    "low",
-                    "speed 1"
-                  ],
-                  "lang": "en"
-                }
-              ]
-            },
-            {
-              "speed_name": "S2",
-              "speed_values": [
-                {
-                  "speed_synonym": [
-                    "high",
-                    "speed 2"
-                  ],
-                  "lang": "en"
-                }
-              ]
-            }
-          ],
-          "ordered": true
-        }
-      ],
-      "reversible": true
+      "availableFanSpeeds": {
+        "speeds": [
+          {"speed_name": "Low", "speed_values": [{"speed_synonym": ["low", "low speed", "slow"], "lang": "en"}]},
+          {"speed_name": "Medium", "speed_values": [{"speed_synonym": ["medium", "medium speed", "med"], "lang": "en"}]}
+        ],
+        "ordered": true
+      }
     }
   },
   {
@@ -202,6 +177,63 @@
     "willReportState": true,
     "attributes": {
       "commandOnlyOnOff": false
+    }
+  },
+  {
+    "id": "7",
+    "type": "action.devices.types.LIGHT",
+    "traits": [
+      "action.devices.traits.OnOff",
+      "action.devices.traits.Brightness",
+      "action.devices.traits.ColorSetting",
+      "action.devices.traits.Modes"
+    ],
+    "name": {
+      "defaultNames": [
+        "My Test Light3"
+      ],
+      "name": "Light 3",
+      "nicknames": [
+        "Mood light"
+      ]
+    },
+    "deviceInfo": {
+      "manufacturer": "Siddhy Co",
+      "model": "Siddhys RGB Bulb Mode",
+      "hwVersion": "2.0",
+      "swVersion": "2.0.0"
+    },
+    "willReportState": true,
+    "attributes": {
+      "availableModes": [{
+        "name": "Mood",
+        "name_values": [{"name_synonym": ["mood", "feeling"], "lang": "en" }],
+        "settings": [
+          {"setting_name": "Blank", "setting_values": [{"setting_synonym": ["null", "nothing"], "lang": "en"}]
+          },
+          {"setting_name": "Happy", "setting_values": [{"setting_synonym": ["happy", "cheerful"], "lang": "en"}]
+          },
+          {"setting_name": "Sad", "setting_values": [{"setting_synonym": ["sad", "unhappy"], "lang": "en"}]
+          },
+          {"setting_name": "Angry", "setting_values": [{"setting_synonym": ["angry", "annoyed"], "lang": "en"}]
+          },
+          {"setting_name": "Party", "setting_values": [{"setting_synonym": ["party", "dance"], "lang": "en"}]
+          },
+          {"setting_name": "Anxious", "setting_values": [{"setting_synonym": ["anxious mood", "anxiety"], "lang": "en"}]
+          },
+          {"setting_name": "Busy", "setting_values": [{"setting_synonym": ["busy mood", "busy", "at work"], "lang": "en"}]
+          }
+        ],
+        "ordered": true
+        }],
+      "commandOnlyOnOff": false,
+      "commandOnlyBrightness": false,
+      "commandOnlyModes": false,
+      "colorModel": "rgb",
+      "colorTemperatureRange": {
+        "temperatureMinK": 2000,
+        "temperatureMaxK": 6500
+      }
     }
   }
 ]
