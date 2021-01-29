@@ -4,6 +4,9 @@
       "sourceType": "script"
     },
     "extends": ["google"],
+    "rules": {
+     "no-unused-vars": "warn"
+    },
     "env": {
       "node": true
     }

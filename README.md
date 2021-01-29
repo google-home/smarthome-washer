@@ -94,7 +94,7 @@ The devices can be added or modified from the **devices.json** within the functi
 
 1. Use the Arduino Json library version 5.13.0
 2. Use Firebase Arduino library from here: https://github.com/FirebaseExtended/firebase-arduino.git   
-3. Default **agentUserId**  is set to **123** in the index.js file. Please change it to something unique to make use of Homegraph based reporting.    
+3. Default **USER_ID**  is set to **123** in the index.js file. Please change it to something unique to make use of Homegraph based reporting.    
 4. Use esp8266 core version 2.5.2  
 
 
