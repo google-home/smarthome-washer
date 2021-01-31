@@ -53,6 +53,7 @@ alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>
 20. Deploy firebase using:   
     ```   
     sudo npm install   
+    firebase init database    
     firebase deploy   
     ```   
 21. In the Actions console under Overview > Build your Action, select Add Action(s). Enter the URL for your cloud function that provides fulfillment for  the smart home intents and click Save.   
@@ -94,7 +95,7 @@ The devices can be added or modified from the **devices.json** within the functi
 
 1. Use the Arduino Json library version 5.13.0
 2. Use Firebase Arduino library from here: https://github.com/FirebaseExtended/firebase-arduino.git   
-3. Default **agentUserId**  is set to **123** in the index.js file. Please change it to something unique to make use of Homegraph based reporting.    
+3. Default **USER_ID**  is set to **123** in the index.js file. Please change it to something unique to make use of Homegraph based reporting.    
 4. Use esp8266 core version 2.5.2  
 
 

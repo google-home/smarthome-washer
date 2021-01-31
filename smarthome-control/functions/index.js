@@ -18,26 +18,61 @@
 
 const functions = require('firebase-functions');
 const {smarthome} = require('actions-on-google');
+const {google} = require('googleapis');
 const util = require('util');
 const admin = require('firebase-admin');
 // Initialize Firebase
 admin.initializeApp();
 const firebaseRef = admin.database().ref('/');
 
+// Hardcoded user ID
+const USER_ID = '123';
+
+exports.login = functions.https.onRequest((request, response) => {
+  if (request.method === 'GET') {
+    functions.logger.log('Requesting login page');
+    response.send(`
+    <html>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <body>
+        <form action="/login" method="post">
+          <input type="hidden"
+            name="responseurl" value="${request.query.responseurl}" />
+          <button type="submit" style="font-size:14pt">
+            Link this service to Google
+          </button>
+        </form>
+      </body>
+    </html>
+  `);
+  } else if (request.method === 'POST') {
+    // Here, you should validate the user account.
+    // In this sample, we do not do that.
+    const responseurl = decodeURIComponent(request.body.responseurl);
+    functions.logger.log(`Redirect to ${responseurl}`);
+    return response.redirect(responseurl);
+  } else {
+    // Unsupported method
+    response.send(405, 'Method Not Allowed');
+  }
+});
+
+
 exports.fakeauth = functions.https.onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
-    decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
-    request.query.state);
-  console.log(responseurl);
-  return response.redirect(responseurl);
+      decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
+      request.query.state);
+  functions.logger.log(`Set redirect as ${responseurl}`);
+  return response.redirect(
+      `/login?responseurl=${encodeURIComponent(responseurl)}`);
 });
 
 exports.faketoken = functions.https.onRequest((request, response) => {
-  const grantType = request.query.grant_type
-    ? request.query.grant_type : request.body.grant_type;
+  const grantType = request.query.grant_type ?
+    request.query.grant_type : request.body.grant_type;
   const secondsInDay = 86400; // 60 * 60 * 24
   const HTTP_STATUS_OK = 200;
-  console.log(`Grant type ${grantType}`);
+  functions.logger.log(`Grant type ${grantType}`);
 
   let obj;
   if (grantType === 'authorization_code') {
@@ -55,15 +90,15 @@ exports.faketoken = functions.https.onRequest((request, response) => {
     };
   }
   response.status(HTTP_STATUS_OK)
-    .json(obj);
+      .json(obj);
 });
 
 let jwt
 try {
   jwt = require('./smart-home-key.json')
 } catch (e) {
-  console.warn('Service account key is not found')
-  console.warn('Report state and Request sync will be unavailable')
+  functions.logger.warn('Service account key is not found')
+  functions.logger.warn('Report state and Request sync will be unavailable')
 }
 
 const app = smarthome({
@@ -78,7 +113,7 @@ const deviceitems = JSON.parse(JSON.stringify(devicelist));
 var devicecounter;
 
 app.onSync((body) => {
-  console.log('onSync');
+  functions.logger.log('onSync');
   for (devicecounter = 0; devicecounter < deviceitems.length; devicecounter++) {
     if (deviceitems[devicecounter].traits.includes('action.devices.traits.TemperatureSetting')) {
       if (deviceitems[devicecounter].attributes.queryOnlyTemperatureSetting == true) {
@@ -108,7 +143,7 @@ app.onSync((body) => {
   return {
     requestId: body.requestId,
     payload: {
-      agentUserId: '123',
+      agentUserId: USER_ID,
       devices: deviceitems
     },
   };
@@ -161,7 +196,7 @@ const queryFirebase = async (deviceId) => {
     }
   }
   return asyncvalue;
-}
+};
 
 const queryDevice = async (deviceId) => {
   const data = await queryFirebase(deviceId);
@@ -202,7 +237,7 @@ const queryDevice = async (deviceId) => {
     datavalue = Object.assign(datavalue, {thermostatTemperatureSetpointHigh: data.thermostatTemperatureSetpointHigh});
   }
   return datavalue;
-}
+};
 
 app.onQuery(async (body) => {
   const {requestId} = body;
@@ -214,24 +249,24 @@ app.onQuery(async (body) => {
   const intent = body.inputs[0];
   for (const device of intent.payload.devices) {
     const deviceId = device.id;
-    queryPromises.push(queryDevice(deviceId)
-      .then((data) => {
-        // Add response to device payload
-        payload.devices[deviceId] = data;
-      }
-    ));
+    queryPromises.push(
+        queryDevice(deviceId)
+            .then((data) => {
+              // Add response to device payload
+              payload.devices[deviceId] = data;
+            }) );
   }
   // Wait for all promises to resolve
-  await Promise.all(queryPromises)
+  await Promise.all(queryPromises);
   return {
     requestId: requestId,
     payload: payload,
   };
 });
 
-const updateDevice = async (execution,deviceId) => {
-  const {params,command} = execution;
-  let state, ref;
+const updateDevice = async (execution, deviceId) => {
+  const {params, command} = execution;
+  let state, let ref;
   switch (command) {
     case 'action.devices.commands.OnOff':
       state = {on: params.on};
@@ -266,7 +301,7 @@ const updateDevice = async (execution,deviceId) => {
       ref = firebaseRef.child(deviceId).child('TemperatureSetting');
   }
   return ref.update(state)
-    .then(() => state);
+      .then(() => state);
 };
 
 app.onExecute(async (body) => {
@@ -286,18 +321,17 @@ app.onExecute(async (body) => {
     for (const device of command.devices) {
       for (const execution of command.execution) {
         executePromises.push(
-          updateDevice(execution,device.id)
-            .then((data) => {
-              result.ids.push(device.id);
-              Object.assign(result.states, data);
-            })
-            .catch(() => console.error(`Unable to update ${device.id}`))
-        );
+            updateDevice(execution, device.id)
+                .then((data) => {
+                  result.ids.push(device.id);
+                  Object.assign(result.states, data);
+                })
+                .catch(() => functions.logger.error('EXECUTE', device.id)));
       }
     }
   }
 
-  await Promise.all(executePromises)
+  await Promise.all(executePromises);
   return {
     requestId: requestId,
     payload: {
@@ -306,19 +340,24 @@ app.onExecute(async (body) => {
   };
 });
 
+app.onDisconnect((body, headers) => {
+  functions.logger.log('User account unlinked from Google Assistant');
+  // Return empty response
+  return {};
+});
 
 exports.smarthome = functions.https.onRequest(app);
 
 exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
-  console.info('Request SYNC for user 123');
+  functions.logger.info('Request SYNC for user ${USER_ID}');
   try {
-    const res = await app.requestSync('123');
-    console.log('Request sync completed');
+    const res = await app.requestSync(USER_ID);
+    functions.logger.log('Request sync completed');
     response.json(res.data);
   } catch (err) {
-    console.error(err);
-    response.status(500).send(`Error requesting sync: ${err}`)
+    functions.logger.error(err);
+    response.status(500).send(`Error requesting sync: ${err}`);
   }
 });
 
@@ -327,10 +366,10 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  * has been changed.
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change, context) => {
-  console.info('Firebase write event triggered this cloud function');
+  functions.logger.info('Firebase write event triggered this cloud function');
   if (!app.jwt) {
-    console.warn('Service account key is not configured');
-    console.warn('Report state is unavailable');
+    functions.logger.warn('Service account key is not configured');
+    functions.logger.warn('Report state is unavailable');
     return;
   }
   const snapshot = change.after.val();
@@ -379,7 +418,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
 
   const postData = {
     requestId: 'ff36a3ccsiddhy', /* Any unique ID */
-    agentUserId: '123', /* Hardcoded user ID */
+    agentUserId: USER_ID, /* Hardcoded user ID */
     payload: {
       devices: {
         states: {
@@ -391,6 +430,6 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
   };
 
   const data = await app.reportState(postData);
-  console.log('Report state came back');
-  console.info(data);
+  functions.logger.log('Report state came back');
+  functions.logger.info(data);
 });
