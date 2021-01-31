@@ -97,7 +97,8 @@ The devices can be added or modified from the **devices.json** within the functi
 2. Use Firebase Arduino library from here: https://github.com/FirebaseExtended/firebase-arduino.git   
 3. Default **USER_ID**  is set to **123** in the index.js file. Please change it to something unique to make use of Homegraph based reporting.    
 4. Use esp8266 core version 2.5.2  
-
+5. You need to setup a billing account for utilizing firebase services more details can be found [here](https://firebase.google.com/support/faq#expandable-9).     
+6. Though you setup a billing account, you have free usage limits. So, if your usage is within the limits, you will not be billed. More details can be found [here](https://firebase.google.com/support/faq#expandable-10).     
 
 
 ## License
