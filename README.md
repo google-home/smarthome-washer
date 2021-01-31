@@ -53,6 +53,7 @@ alt="Detailed Youtube Video" width="240" height="180" border="10" /></a>
 20. Deploy firebase using:   
     ```   
     sudo npm install   
+    firebase init database    
     firebase deploy   
     ```   
 21. In the Actions console under Overview > Build your Action, select Add Action(s). Enter the URL for your cloud function that provides fulfillment for  the smart home intents and click Save.   
