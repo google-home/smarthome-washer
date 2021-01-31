@@ -24,14 +24,6 @@ const admin = require('firebase-admin');
 // Initialize Firebase
 admin.initializeApp();
 const firebaseRef = admin.database().ref('/');
-// Initialize Homegraph
-const auth = new google.auth.GoogleAuth({
-  scopes: ['https://www.googleapis.com/auth/homegraph']
-});
-const homegraph = google.homegraph({
-  version: 'v1',
-  auth: auth
-});
 
 // Hardcoded user ID
 const USER_ID = '123';
@@ -101,7 +93,16 @@ exports.faketoken = functions.https.onRequest((request, response) => {
       .json(obj);
 });
 
+let jwt
+try {
+  jwt = require('./smart-home-key.json')
+} catch (e) {
+  functions.logger.warn('Service account key is not found')
+  functions.logger.warn('Report state and Request sync will be unavailable')
+}
+
 const app = smarthome({
+  jwt: jwt,
   debug: true,
 })
 
@@ -351,12 +352,8 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   functions.logger.info('Request SYNC for user ${USER_ID}');
   try {
-    const res = await homegraph.devices.requestSync({
-      requestBody: {
-        agentUserId: USER_ID
-      }
-    });
-    functions.logger.info('Request sync response:', res.status, res.data);
+    const res = await app.requestSync(USER_ID);
+    functions.logger.log('Request sync completed');
     response.json(res.data);
   } catch (err) {
     functions.logger.error(err);
@@ -370,7 +367,11 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  */
 exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change, context) => {
   functions.logger.info('Firebase write event triggered this cloud function');
-
+  if (!app.jwt) {
+    functions.logger.warn('Service account key is not configured');
+    functions.logger.warn('Report state is unavailable');
+    return;
+  }
   const snapshot = change.after.val();
 
   var syncvalue = {};
@@ -415,7 +416,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
     }
   }
 
-  const requestBody = {
+  const postData = {
     requestId: 'ff36a3ccsiddhy', /* Any unique ID */
     agentUserId: USER_ID, /* Hardcoded user ID */
     payload: {
@@ -428,9 +429,7 @@ exports.reportstate = functions.database.ref('{deviceId}').onWrite(async (change
     },
   };
 
-  const res = await homegraph.devices.reportStateAndNotification({
-    requestBody
-  });
-  functions.logger.info('Report state response:', res.status, res.data);
-
+  const data = await app.reportState(postData);
+  functions.logger.log('Report state came back');
+  functions.logger.info(data);
 });
