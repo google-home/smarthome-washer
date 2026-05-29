@@ -16,7 +16,9 @@
 
 'use strict';
 
-const functions = require('firebase-functions');
+const {onRequest} = require('firebase-functions/v2/https');
+const {onValueWritten} = require('firebase-functions/v2/database');
+const logger = require('firebase-functions/logger');
 const {smarthome} = require('actions-on-google');
 const {google} = require('googleapis');
 const util = require('util');
@@ -35,9 +37,9 @@ const homegraph = google.homegraph({
 // Hardcoded user ID
 const USER_ID = '123';
 
-exports.login = functions.https.onRequest((request, response) => {
+exports.login = onRequest((request, response) => {
   if (request.method === 'GET') {
-    functions.logger.log('Requesting login page');
+    logger.log('Requesting login page');
     response.send(`
     <html>
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -56,7 +58,7 @@ exports.login = functions.https.onRequest((request, response) => {
     // Here, you should validate the user account.
     // In this sample, we do not do that.
     const responseurl = decodeURIComponent(request.body.responseurl);
-    functions.logger.log(`Redirect to ${responseurl}`);
+    logger.log(`Redirect to ${responseurl}`);
     return response.redirect(responseurl);
   } else {
     // Unsupported method
@@ -64,21 +66,21 @@ exports.login = functions.https.onRequest((request, response) => {
   }
 });
 
-exports.fakeauth = functions.https.onRequest((request, response) => {
+exports.fakeauth = onRequest((request, response) => {
   const responseurl = util.format('%s?code=%s&state=%s',
       decodeURIComponent(request.query.redirect_uri), 'xxxxxx',
       request.query.state);
-  functions.logger.log(`Set redirect as ${responseurl}`);
+  logger.log(`Set redirect as ${responseurl}`);
   return response.redirect(
       `/login?responseurl=${encodeURIComponent(responseurl)}`);
 });
 
-exports.faketoken = functions.https.onRequest((request, response) => {
+exports.faketoken = onRequest((request, response) => {
   const grantType = request.query.grant_type ?
     request.query.grant_type : request.body.grant_type;
   const secondsInDay = 86400; // 60 * 60 * 24
   const HTTP_STATUS_OK = 200;
-  functions.logger.log(`Grant type ${grantType}`);
+  logger.log(`Grant type ${grantType}`);
 
   let obj;
   if (grantType === 'authorization_code') {
@@ -107,7 +109,7 @@ app.onSync((body) => {
 });
 
 const queryFirebase = async (deviceId) => {
-  const snapshot = await firebaseRef.child(deviceId).once('value');
+  const snapshot = await getFirebaseRef().child(deviceId).once('value');
   const snapshotVal = snapshot.val();
   // TODO: Define device states to return
   return {};
@@ -135,16 +137,16 @@ app.onExecute((body) => {
 });
 
 app.onDisconnect((body, headers) => {
-  functions.logger.log('User account unlinked from Google Assistant');
+  logger.log('User account unlinked from Google Assistant');
   // Return empty response
   return {};
 });
 
-exports.smarthome = functions.https.onRequest(app);
+exports.smarthome = onRequest(app);
 
-exports.requestsync = functions.https.onRequest(async (request, response) => {
+exports.requestsync = onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
-  functions.logger.info(`Request SYNC for user ${USER_ID}`);
+  logger.info(`Request SYNC for user ${USER_ID}`);
 
   // TODO: Call HomeGraph API for user '123'
   response.status(500).send(`Request SYNC not implemented`);
@@ -154,10 +156,9 @@ exports.requestsync = functions.https.onRequest(async (request, response) => {
  * Send a REPORT STATE call to the homegraph when data for any device id
  * has been changed.
  */
-exports.reportstate = functions.database.ref('{deviceId}').onWrite(
-    async (change, context) => {
-      functions.logger.info('Firebase write event triggered Report State');
+exports.reportstate = onValueWritten('{deviceId}', async (event) => {
+  logger.info('Firebase write event triggered Report State');
 
-      // TODO: Get latest state and call HomeGraph API
-    });
+  // TODO: Get latest state and call HomeGraph API
+});
 

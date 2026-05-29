@@ -43,8 +43,31 @@ html, body {
 }
 
 .demo-card-square.mdl-card {
-  width: 320px;
-  height: 480px;
+  width: 380px;
+  height: auto;
+}
+
+.demo-card-square .mdl-card__supporting-text {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.demo-card-square .mdl-card__supporting-text > div {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.demo-card-square .mdl-card__supporting-text > div:last-child {
+  border-bottom: none;
+}
+
+.demo-card-square .mdl-card__actions {
+  padding: 16px;
+}
+
+.demo-washer-update-btn {
+  width: 100%;
+  text-align: center;
 }
 
 h3 {

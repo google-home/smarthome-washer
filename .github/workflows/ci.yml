@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at 00:00
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Use Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: '24'
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: washer-start/functions
+
+    - name: Run lint
+      run: npm run lint
+      working-directory: washer-start/functions
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Use Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: '24'
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: washer-start/functions
+
+    - name: Run tests with Emulator
+      run: npx -p firebase-tools firebase --project demo-project emulators:exec "npm --prefix functions test"
+      working-directory: washer-start

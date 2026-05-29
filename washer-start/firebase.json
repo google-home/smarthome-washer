@@ -4,10 +4,12 @@
   },
   "hosting": {
     "public": "public",
-    "rewrites": [{
-      "source": "/requestsync",
-      "function": "requestsync"
-    }],
+    "rewrites": [
+      {
+        "source": "/requestsync",
+        "function": "requestsync"
+      }
+    ],
     "ignore": [
       "**/.*",
       "**/node_modules/**"
@@ -26,7 +28,6 @@
   ],
   "functions": [
     {
-      "source": "functions",
       "codebase": "default",
       "ignore": [
         "node_modules",
@@ -34,7 +35,19 @@
         "firebase-debug.log",
         "firebase-debug.*.log",
         "*.local"
-      ]
+      ],
+      "source": "functions"
     }
-  ]
+  ],
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "database": {
+      "port": 9000
+    },
+    "ui": {
+      "enabled": true
+    }
+  }
 }
