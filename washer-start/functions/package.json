@@ -22,6 +22,6 @@
     "eslint-plugin-jsdoc": "^62.9.0",
     "firebase-functions-test": "^3.4.1",
     "globals": "^17.5.0",
-    "mocha": "11.7.5"
+    "mocha": "11.7.6"
   }
 }
